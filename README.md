@@ -297,14 +297,14 @@ Server emits following events:
 
 ```
 {
-  type: 'SEND_STATE',
+  type: 'UPDATE_STATE',
   boards: int[][],
   players: string[]
 }
 ```
 ```
 {
-  type: 'SEND_STATS',
+  type: 'UPDATE_STATS',
   stats: [{login: string, stat: int}, ...]
 }
 ```

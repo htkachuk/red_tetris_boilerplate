@@ -1,3 +1,5 @@
+import * as actions from '../actions'
+import * as reducers from '../reducers'
 export const wsConnect = host => ({ type: 'WS_CONNECT', host });
 export const wsConnecting = host => ({ type: 'WS_CONNECTING', host });
 export const wsConnected = host => ({ type: 'WS_CONNECTED', host });
@@ -19,14 +21,16 @@ export const socketMiddleware = () => {
   const onMessage = store => (event) => {
     const payload = JSON.parse(event.data);
     console.log('receiving server message');
-
-    // switch (payload.type) {
-    //   case 'update_game_players':
-    //     store.dispatch(updateGame(payload.game, payload.current_player));
-    //     break;
-    //   default:
-    //     break;
-    // }
+    switch (payload.type) {
+      case 'UPDATE_STATE':
+        store.dispatch(reducers.updateState(payload.boards, payload.players));
+        break;
+      case 'UPDATE_STATS':
+          store.dispatch(reducers.updateStats(payload.stats));
+          break;
+      default:
+        break;
+    }
   };
 
   // the middleware part of this function

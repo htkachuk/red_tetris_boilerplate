@@ -1,4 +1,5 @@
 import React from 'react'
+import {wsConnect} from '../middleware/socketMiddleware'
 import { connect } from 'react-redux'
 import socketIOClient from "socket.io-client"
 
@@ -16,8 +17,8 @@ class App extends React.Component {
   componentDidMount() {
     const { endpoint } = this.state;
     const socket = socketIOClient(endpoint);
-    socket.on("FromAPI", data => this.setState({ response: data }));
   }
+
   render() {
     const { response } = this.state;
     return (
