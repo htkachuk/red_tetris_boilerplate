@@ -251,7 +251,6 @@ Client emits following events:
   type: 'REGISTER',
   login: string,
   password: string
-
 }
 ```
 ```
@@ -264,6 +263,12 @@ Client emits following events:
 ```
 {
   type: 'CREATE_ROOM',
+  name: string,
+}
+```
+```
+{
+  type: 'JOIN_ROOM',
   name: string,
 }
 ```
