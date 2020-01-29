@@ -239,3 +239,67 @@ $  DEBUG=tetris:* node dist/server/main.js
 In production mode, node.js server serves `index.html` and `bundle.js`, so you have to point to url set up in `params.js` 
 
 That’s all folks ... 
+
+## Socket Connection
+
+WebSocet is listened on http://0.0.0.0:3004.
+
+Client emits following events:
+
+```
+{
+  type: 'REGISTER',
+  login: string,
+  password: string
+
+}
+```
+```
+{
+  type: 'LOGIN',
+  login: string,
+  password: string
+}
+```
+```
+{
+  type: 'CREATE_ROOM',
+  name: string,
+}
+```
+```
+{
+  type: 'LOCK_ROOM',
+}
+```
+```
+{
+  type: 'MOVE_UNIT',
+  move: int,
+}
+```
+```
+{
+  type: 'END_GAME',
+}
+```
+```
+{
+  type: 'REQUEST_STATS',
+}
+```
+Server emits following events:
+
+```
+{
+  type: 'SEND_STATE',
+  boards: int[][],
+  players: string[]
+}
+```
+```
+{
+  type: 'SEND_STATS',
+  stats: [{login: string, stat: int}, ...]
+}
+```
