@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 const url = "mongodb://localhost:27017";
-let client = new MongoClient(url, {useNewUrlParser: true});
+let client = new MongoClient(url);
 const dbName = "red_tetris";
 let db;
 client.connect().then((client) => {
