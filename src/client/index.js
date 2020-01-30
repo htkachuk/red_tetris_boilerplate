@@ -1,17 +1,27 @@
-import React from "react";
-import { render } from "react-dom";
-import { Provider } from "react-redux";
+import React from 'react'
+import ReactDom from 'react-dom'
+import createLogger from 'redux-logger'
+import thunk from 'redux-thunk'
+import { createStore, applyMiddleware } from 'redux'
+import { Provider } from 'react-redux'                                                                                                                                                    
+import {storeStateMiddleWare} from './middleware/storeStateMiddleWare'
+import {socketMiddleware} from './middleware/socketMiddleware'
+import reducer from './reducers'
+import App from './containers/app'
+import {alert} from './actions/alert'
 
-import { store } from "./helpers";
-import { App } from "./App";
+const initialState = {}
 
-// setup fake backend
-import { configureFakeBackend } from "./helpers";
-configureFakeBackend();
+const store = createStore(
+  reducer,
+  initialState,
+  applyMiddleware(thunk, createLogger(), socketMiddleware, storeStateMiddleWare)
+)
 
-render(
+ReactDom.render((
   <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById("app")
-);
+    <App/>
+  </Provider>
+), document.getElementById('tetris'))
+
+store.dispatch(alert('Soon, will be here a fantastic Tetris ...'))
