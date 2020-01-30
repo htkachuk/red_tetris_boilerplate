@@ -1,3 +1,4 @@
+import * as actions from '../actions'
 import * as reducers from '../reducers'
 export const wsConnect = host => ({ type: 'WS_CONNECT', host });
 export const wsConnecting = host => ({ type: 'WS_CONNECTING', host });
