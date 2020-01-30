@@ -1,9 +1,28 @@
-export const ALERT_POP = 'ALERT_POP'
+// export const ALERT_POP = 'ALERT_POP'
 
-export const alert = (message) => {
-  return {
-    type: ALERT_POP,
-    message
-  }
+// export const alert = (message) => {
+//   return {
+//     type: ALERT_POP,
+//     message
+//   }
+// }
+
+import { alertConstants } from "../constants";
+
+export const alertActions = {
+  success,
+  error,
+  clear
+};
+
+function success(message) {
+  return { type: alertConstants.SUCCESS, message };
 }
 
+function error(message) {
+  return { type: alertConstants.ERROR, message };
+}
+
+function clear() {
+  return { type: alertConstants.CLEAR };
+}
