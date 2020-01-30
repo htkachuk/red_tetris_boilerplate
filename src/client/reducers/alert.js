@@ -1,13 +1,20 @@
-import { ALERT_POP } from '../actions/alert'
+import { alertConstants } from "../constants";
 
-const reducer = (state = {} , action) => {
-  switch(action.type){
-    case ALERT_POP:
-      return { message: action.message }
-    default: 
-      return state
+export function alert(state = {}, action) {
+  switch (action.type) {
+    case alertConstants.SUCCESS:
+      return {
+        type: "alert-success",
+        message: action.message
+      };
+    case alertConstants.ERROR:
+      return {
+        type: "alert-danger",
+        message: action.message
+      };
+    case alertConstants.CLEAR:
+      return {};
+    default:
+      return state;
   }
 }
-
-export default reducer
-
