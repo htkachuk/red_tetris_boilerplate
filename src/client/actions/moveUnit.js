@@ -1,9 +1,8 @@
-export const MOVE_UNIT = 'MOVE_UNIT'
+export const MOVE_UNIT = "MOVE_UNIT";
 
-export const moveUnit = (move) => {
+export const moveUnit = move => {
   return {
     type: MOVE_UNIT,
-    move,
-  }
-}
-
+    move
+  };
+};

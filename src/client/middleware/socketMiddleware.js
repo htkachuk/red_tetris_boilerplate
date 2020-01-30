@@ -5,8 +5,9 @@ export const wsConnected = host => ({ type: "WS_CONNECTED", host });
 export const wsDisconnect = host => ({ type: "WS_DISCONNECT", host });
 export const wsDisconnected = host => ({ type: "WS_DISCONNECTED", host });
 
-export const socketMiddleware = () => {
+export const socketMiddleware = store => {
   let socket = null;
+  console.log(store);
 
   const onOpen = store => event => {
     console.log("websocket open", event.target.url);
@@ -59,7 +60,7 @@ export const socketMiddleware = () => {
       case "NEW_MESSAGE":
         console.log("sending a message", action.msg);
         socket.send(
-          JSON.stringify({ command: "NEW_MESSAGE", message: action.msg })
+          JSON.stringify({ command: action.type, message: action.message })
         );
         break;
       default:
