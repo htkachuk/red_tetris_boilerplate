@@ -25,7 +25,9 @@ module.exports.createUser = async(body) =>  {
             let user = {
                 login: body.login,
                 password: body.password,
-                totalScore: 0
+                totalScore: 0,
+                roomName: null,
+                connection: body.id
             };
             let result = await users.insertOne(user);
             console.log(existedUser);

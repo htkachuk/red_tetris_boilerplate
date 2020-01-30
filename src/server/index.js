@@ -1,6 +1,7 @@
 import fs  from 'fs'
 import debug from 'debug'
 import * as databaseInstance from './db'
+import * as eventTypes from './eventTypes'
 
 const logerror = debug('tetris:error')
   , loginfo = debug('tetris:info')
@@ -31,10 +32,45 @@ const initApp = (app, params, cb) => {
 const initEngine = io => {
   io.on('connection', function(socket){
     loginfo("Socket connected: " + socket.id)
-    socket.on('action', (action) => {
-      if(action.type === 'server/ping'){
-        socket.emit('action', {type: 'pong'})
-      }
+
+    socket.on(eventTypes.REGISTER, (action) => {
+        // TODO: register 
+        socket.emit(eventTypes.REGISTER_RESULT, {type: 'pong'})
+    })
+    
+    socket.on(eventTypes.LOGIN, (action) => {
+      // TODO: login 
+      socket.emit(eventTypes.LOGIN_RESULT, {type: 'pong'})
+    })
+  
+    socket.on(eventTypes.CREATE_ROOM, (action) => {
+        // TODO: register 
+        socket.emit(eventTypes.JOIN_ROOM_RESULT, {type: 'pong'})
+    })
+
+    socket.on(eventTypes.JOIN_ROOM, (action) => {
+      // TODO: login 
+      socket.emit(eventTypes.JOIN_ROOM_RESULT, {type: 'pong'})
+    })
+    socket.on(eventTypes.LOCK_ROOM, (action) => {
+        // TODO: register 
+        socket.emit(eventTypes.UPDATE_STATE, {type: 'pong'})
+    })
+    
+    socket.on(eventTypes.MOVE_UNIT, (action) => {
+      // TODO: login 
+      socket.emit(eventTypes.UPDATE_STATE, {type: 'pong'})
+    })
+  
+    socket.on(eventTypes.REQUEST_STATS, (action) => {
+        // TODO: register 
+        socket.emit(eventTypes.UPDATE_STATS, {type: 'pong'})
+    })
+
+    socket.on(eventTypes.END_GAME, (action) => {
+      // TODO: login 
+      socket.emit(eventTypes.UPDATE_STATE, {type: 'pong'})
+      socket.emit(eventTypes.UPDATE_STATS, {type: 'pong'})
     })
   })
 }
