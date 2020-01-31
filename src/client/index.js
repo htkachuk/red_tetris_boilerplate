@@ -12,6 +12,7 @@ import App from "./containers/app";
 import { alert } from "./actions/alert";
 import { ConnectedRouter } from "connected-react-router";
 import { createBrowserHistory } from "history";
+// import "./styles.css";
 
 export const history = createBrowserHistory();
 
