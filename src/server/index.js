@@ -66,14 +66,11 @@ const initEngine = io => {
 
     socket.on(eventTypes.JOIN_ROOM, action => {
       action.id = socket.id;
-      databaseInstance.loginUser(action).then(result => {
-        console.log("Login result:", result);
-        databaseInstance.joinRoom(action).then(result => {
-          console.log("Join result:", result);
-          socket.emit(eventTypes.JOIN_ROOM_RESULT, {
-            type: eventTypes.JOIN_ROOM_RESULT,
-            result
-          });
+      databaseInstance.joinRoom(action).then(result => {
+        console.log("Join result:", result);
+        socket.emit(eventTypes.JOIN_ROOM_RESULT, {
+          type: eventTypes.JOIN_ROOM_RESULT,
+          result
         });
       });
     });
