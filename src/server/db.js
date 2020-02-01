@@ -20,9 +20,9 @@ module.exports.getUser = async action => {
 module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
-  console.log(action.login);
   if (existedUser !== null) {
-    console.log(existedUser);
+    // console.log("Result is: user exists");
+    // console.log(existedUser);
     return JSON.stringify({ error: "user exists" });
   } else {
     let user = {
@@ -33,7 +33,6 @@ module.exports.createUser = async action => {
       connection: action.id
     };
     const result = await users.insertOne(user);
-    console.log(result);
     return JSON.stringify({ result: result["ops"] });
   }
 };
@@ -41,14 +40,14 @@ module.exports.createUser = async action => {
 module.exports.loginUser = async action => {
   const users = db.collection("users");
   const user = await users.findOne({ login: action.login });
+  console.log("User is: ", user);
   if (user === null) {
-    console.log(user);
     return JSON.stringify({ error: "user not exists" });
   } else if (user.password !== action.password) {
     return JSON.stringify({ error: "wrong password" });
   } else {
     user.connection = action.id;
-    const result = await events.findOneAndUpdate(
+    const result = await users.findOneAndUpdate(
       { login: action.login },
       { $set: user }
     );

@@ -35,7 +35,7 @@ const initEngine = io => {
     loginfo("Socket connected: " + socket.id);
 
     socket.on(eventTypes.REGISTER, action => {
-      console.log(action);
+      action.id = socket.id;
       databaseInstance.createUser(action).then(result => {
         socket.emit(eventTypes.REGISTER_RESULT, {
           type: eventTypes.REGISTER_RESULT,
@@ -46,6 +46,7 @@ const initEngine = io => {
 
     socket.on(eventTypes.LOGIN, action => {
       databaseInstance.loginUser(action).then(result => {
+        action.id = socket.id;
         socket.emit(eventTypes.LOGIN_RESULT, {
           type: eventTypes.LOGIN_RESULT,
           result
