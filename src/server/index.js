@@ -56,24 +56,28 @@ const initEngine = io => {
 
     socket.on(eventTypes.CREATE_ROOM, action => {
       action.id = socket.id;
-      databaseInstance.loginUser(action).then(result => {
-        databaseInstance.createRoom(action).then(result => {
-          socket.emit(eventTypes.CREATE_ROOM_RESULT, {
-            type: eventTypes.CREATE_ROOM_RESULT,
-            result
-          });
-
-          // socket.emit(eventTypes.CREATE_ROOM_RESULT, {
-          //   type: eventTypes.CREATE_ROOM_RESULT,
-          //   result
+      databaseInstance.createRoom(action).then(result => {
+        socket.emit(eventTypes.CREATE_ROOM_RESULT, {
+          type: eventTypes.CREATE_ROOM_RESULT,
+          result
         });
       });
     });
 
     socket.on(eventTypes.JOIN_ROOM, action => {
-      // TODO: login
-      socket.emit(eventTypes.JOIN_ROOM_RESULT, { type: "pong" });
+      action.id = socket.id;
+      databaseInstance.loginUser(action).then(result => {
+        console.log("Login result:", result);
+        databaseInstance.joinRoom(action).then(result => {
+          console.log("Join result:", result);
+          socket.emit(eventTypes.JOIN_ROOM_RESULT, {
+            type: eventTypes.JOIN_ROOM_RESULT,
+            result
+          });
+        });
+      });
     });
+
     socket.on(eventTypes.LOCK_ROOM, action => {
       // TODO: register
       socket.emit(eventTypes.UPDATE_STATE, { type: "pong" });
@@ -102,58 +106,58 @@ export function create(params) {
     const app = require("http").createServer(function(req, res) {
       res.writeHead(200, { "Content-Type": "text/html" });
 
-      let url = req.url;
-      let body = "";
-      let response = "";
+      // let url = req.url;
+      // let body = "";
+      // let response = "";
 
-      req
-        .on("data", function(chunk) {
-          body += chunk;
-        })
-        .on("end", async () => {
-          if (url === "/user") {
-            switch (req.method) {
-              case "GET":
-                response = await databaseInstance.loginUser(JSON.parse(body));
-                break;
-              case "POST":
-                response = await databaseInstance.createUser(body);
-                break;
-              case "PUT":
-                res = databaseInstance.updateUser(req, res);
-                break;
-              case "DELETE":
-                res = databaseInstance.deleteUser(req, res);
-                break;
-              default:
-                break;
-            }
-          } else if (url === "/room") {
-            switch (req.method) {
-              case "GET":
-                res = databaseInstance.getRoom(req, res);
-                break;
-              case "POST":
-                res = databaseInstance.createRoom(req, res);
-                break;
-              case "PUT":
-                res = databaseInstance.updateRoom(req, res);
-                break;
-              case "DELETE":
-                res = databaseInstance.deleteRoom(req, res);
-                break;
-              default:
-                break;
-            }
+      // req
+      //   .on("data", function(chunk) {
+      //     body += chunk;
+      //   })
+      //   .on("end", async () => {
+      //     if (url === "/user") {
+      //       switch (req.method) {
+      //         case "GET":
+      //           response = await databaseInstance.loginUser(JSON.parse(body));
+      //           break;
+      //         case "POST":
+      //           response = await databaseInstance.createUser(body);
+      //           break;
+      //         case "PUT":
+      //           res = databaseInstance.updateUser(req, res);
+      //           break;
+      //         case "DELETE":
+      //           res = databaseInstance.deleteUser(req, res);
+      //           break;
+      //         default:
+      //           break;
+      //       }
+      //     } else if (url === "/room") {
+      //       switch (req.method) {
+      //         case "GET":
+      //           res = databaseInstance.getRoom(req, res);
+      //           break;
+      //         case "POST":
+      //           res = databaseInstance.createRoom(req, res);
+      //           break;
+      //         case "PUT":
+      //           res = databaseInstance.updateRoom(req, res);
+      //           break;
+      //         case "DELETE":
+      //           res = databaseInstance.deleteRoom(req, res);
+      //           break;
+      //         default:
+      //           break;
+      //       }
 
-            // res.end();
-          } else {
-            res.write("<h1>Hello World!<h1>");
-            res.end();
-          }
-          console.log(response);
-          res.end(response);
-        });
+      //       // res.end();
+      //     } else {
+      //       res.write("<h1>Hello World!<h1>");
+      //       res.end();
+      //     }
+      //     console.log(response);
+      //     res.end(response);
+      //   });
     });
     initApp(app, params, () => {
       const io = require("socket.io")(app);

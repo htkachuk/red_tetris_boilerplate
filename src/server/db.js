@@ -1,3 +1,5 @@
+import * as helpers from "./helpers";
+
 const MongoClient = require("mongodb").MongoClient;
 const url = "mongodb://localhost:27017";
 let client = new MongoClient(url);
@@ -6,16 +8,6 @@ let db;
 client.connect().then(client => {
   db = client.db(dbName);
 });
-
-module.exports.getUser = async action => {
-  let users = db.collection("users");
-  let existedUser = await users.findOne({ login: action.login });
-  console.log(action.login);
-  if (existedUser !== null) {
-    console.log(existedUser);
-    return JSON.stringify({ error: "user exists" });
-  } else return JSON.stringify({ error: "other result" });
-};
 
 module.exports.createUser = async action => {
   const users = db.collection("users");
@@ -45,20 +37,26 @@ module.exports.createRoom = async action => {
     const currentUser = await users.findOne({ connection: action.id });
     if (currentUser === null)
       return JSON.stringify({ error: "user doesn't exists" });
+    if (currentUser.roomName !== null)
+      return JSON.stringify({ error: "user has room" });
+    currentUser.room = action.name;
     const room = {
       name: action.name,
       participants: [currentUser.login],
       leader: currentUser.login
     };
-    const result = await rooms.insertOne(room);
-    return JSON.stringify({ result: result["ops"] });
+    const resultRoom = await rooms.insertOne(room);
+    await users.findOneAndUpdate(
+      { connection: action.id },
+      { $set: currentUser }
+    );
+    return JSON.stringify({ result: resultRoom["ops"] });
   }
 };
 
 module.exports.loginUser = async action => {
   const users = db.collection("users");
   const user = await users.findOne({ login: action.login });
-  console.log("User is: ", user);
   if (user === null) {
     return JSON.stringify({ error: "user not exists" });
   } else if (user.password !== action.password) {
@@ -73,55 +71,28 @@ module.exports.loginUser = async action => {
   }
 };
 
-// module.exports.updateUser = async (req, res) => {
-//   const users = db.collection("users");
-//   const user = await users.findOne({ login: req.body.login });
-//   if (user !== null) {
-//     res.json({ error: "user exists" });
-//   } else {
-//     user.totalScore = req.body.totalScore;
-//     const result = await events.findOneAndUpdate(
-//       { login: user.login },
-//       { $set: user }
-//     );
-//     res.json({ result });
-//   }
-//   return res;
-// };
-
-// module.exports.deleteUser = async (req, res) => {
-//   const users = db.collection("users");
-//   const result = await users.findOneAndDelete({ login: req.body.login });
-//   res.json({ result });
-//   return res;
-// };
-
-module.exports.getRoom = async (req, res) => {
+module.exports.joinRoom = async action => {
   const rooms = db.collection("rooms");
-  const result = await rooms.findOne({ name: req.body.name });
-  res.json({ result });
-  return res;
-};
+  const existedRoom = await rooms.findOne({ name: action.name });
+  const users = db.collection("users");
+  const currentUser = await users.findOne({ connection: action.id });
 
-module.exports.updateRoom = async (req, res) => {
-  let rooms = db.collection("rooms");
-  let room = await rooms.findOne({ name: req.body.name });
-  if (room !== None) {
-    res.json({ error: "room doesn't exists" });
-  } else {
-    room.participants = req.body.participants;
-    result = await events.findOneAndUpdate(
-      { name: req.body.name },
-      { $set: room }
-    );
-    res.json({ result });
-  }
-  return res;
-};
+  const validationResult = await helpers.joinRoomValidation(
+    existedRoom,
+    currentUser
+  );
+  console.log(existedRoom);
+  if (validationResult.result !== "error") return validationResult;
 
-module.exports.deleteRoom = async (req, res) => {
-  let rooms = db.collection("rooms");
-  let result = await rooms.findOneAndDelete({ name: req.body.name });
-  res.json({ result });
-  return res;
+  existedRoom.participants.push(currentUser.login);
+  currentUser.room = action.name;
+  await users.findOneAndUpdate(
+    { connection: action.id },
+    { $set: currentUser }
+  );
+  const resultRoom = await rooms.findOneAndUpdate(
+    { name: action.name },
+    { $set: existedRoom }
+  );
+  return JSON.stringify({ result: resultRoom["ops"] });
 };
