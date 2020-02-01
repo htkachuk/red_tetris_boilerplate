@@ -51,7 +51,6 @@ const initEngine = io => {
           result
         });
       });
-      socket.emit(eventTypes.LOGIN_RESULT, { type: "pong" });
     });
 
     socket.on(eventTypes.CREATE_ROOM, action => {
@@ -103,7 +102,7 @@ export function create(params) {
           if (url === "/user") {
             switch (req.method) {
               case "GET":
-                res = databaseInstance.getUser(req, res);
+                response = await databaseInstance.loginUser(JSON.parse(body));
                 break;
               case "POST":
                 response = await databaseInstance.createUser(body);
@@ -134,6 +133,7 @@ export function create(params) {
               default:
                 break;
             }
+
             // res.end();
           } else {
             res.write("<h1>Hello World!<h1>");
@@ -150,7 +150,7 @@ export function create(params) {
         app.close(() => {
           app.unref();
         });
-        loginfo(`Engine stopped.`);
+        loginfo("Engine stopped.");
         cb();
       };
 

@@ -7,16 +7,20 @@ client.connect().then(client => {
   db = client.db(dbName);
 });
 
-module.exports.getUser = async (req, res) => {
+module.exports.getUser = async action => {
   let users = db.collection("users");
-  let result = await users.findOne({ login: req.body.login });
-  res.json({ result: result });
-  return res;
+  let existedUser = await users.findOne({ login: action.login });
+  console.log(action.login);
+  if (existedUser !== null) {
+    console.log(existedUser);
+    return JSON.stringify({ error: "user exists" });
+  } else return JSON.stringify({ error: "other result" });
 };
 
 module.exports.createUser = async action => {
-  let users = db.collection("users");
-  let existedUser = await users.findOne({ login: action.login });
+  const users = db.collection("users");
+  const existedUser = await users.findOne({ login: action.login });
+  console.log(action.login);
   if (existedUser !== null) {
     console.log(existedUser);
     return JSON.stringify({ error: "user exists" });
@@ -28,15 +32,15 @@ module.exports.createUser = async action => {
       roomName: null,
       connection: action.id
     };
-    let result = await users.insertOne(user);
+    const result = await users.insertOne(user);
     console.log(result);
     return JSON.stringify({ result: result["ops"] });
   }
 };
 
 module.exports.loginUser = async action => {
-  let users = db.collection("users");
-  let user = await users.findOne({ login: action.login });
+  const users = db.collection("users");
+  const user = await users.findOne({ login: action.login });
   if (user === null) {
     console.log(user);
     return JSON.stringify({ error: "user not exists" });
@@ -44,7 +48,7 @@ module.exports.loginUser = async action => {
     return JSON.stringify({ error: "wrong password" });
   } else {
     user.connection = action.id;
-    result = await events.findOneAndUpdate(
+    const result = await events.findOneAndUpdate(
       { login: action.login },
       { $set: user }
     );
@@ -53,31 +57,31 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.updateUser = async (req, res) => {
-  let users = db.collection("users");
-  let user = await users.findOne({ login: req.body.login });
-  if (user !== None) {
+  const users = db.collection("users");
+  const user = await users.findOne({ login: req.body.login });
+  if (user !== null) {
     res.json({ error: "user exists" });
   } else {
     user.totalScore = req.body.totalScore;
-    result = await events.findOneAndUpdate(
+    const result = await events.findOneAndUpdate(
       { login: user.login },
       { $set: user }
     );
-    res.json({ result: result });
+    res.json({ result });
   }
   return res;
 };
 
 module.exports.deleteUser = async (req, res) => {
-  let users = db.collection("users");
-  let result = await users.findOneAndDelete({ login: req.body.login });
-  res.json({ result: result });
+  const users = db.collection("users");
+  const result = await users.findOneAndDelete({ login: req.body.login });
+  res.json({ result });
   return res;
 };
 module.exports.getRoom = async (req, res) => {
-  let rooms = db.collection("rooms");
-  let result = await rooms.findOne({ name: req.body.name });
-  res.json({ result: result });
+  const rooms = db.collection("rooms");
+  const result = await rooms.findOne({ name: req.body.name });
+  res.json({ result });
   return res;
 };
 
@@ -107,7 +111,7 @@ module.exports.updateRoom = async (req, res) => {
       { name: req.body.name },
       { $set: room }
     );
-    res.json({ result: result });
+    res.json({ result });
   }
   return res;
 };
@@ -115,6 +119,6 @@ module.exports.updateRoom = async (req, res) => {
 module.exports.deleteRoom = async (req, res) => {
   let rooms = db.collection("rooms");
   let result = await rooms.findOneAndDelete({ name: req.body.name });
-  res.json({ result: result });
+  res.json({ result });
   return res;
 };
