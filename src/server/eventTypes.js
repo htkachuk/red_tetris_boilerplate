@@ -1,4 +1,5 @@
 export const CREATE_ROOM = "CREATE_ROOM";
+export const CREATE_ROOM_RESULT = "CREATE_ROOM_RESULT";
 export const REQUEST_STATS = "REQUEST_STATS";
 export const END_GAME = "END_GAME";
 export const JOIN_ROOM = "JOIN_ROOM";

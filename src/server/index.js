@@ -55,8 +55,19 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.CREATE_ROOM, action => {
-      // TODO: register
-      socket.emit(eventTypes.JOIN_ROOM_RESULT, { type: "pong" });
+      action.id = socket.id;
+      databaseInstance.loginUser(action).then(result => {
+        databaseInstance.createRoom(action).then(result => {
+          socket.emit(eventTypes.CREATE_ROOM_RESULT, {
+            type: eventTypes.CREATE_ROOM_RESULT,
+            result
+          });
+
+          // socket.emit(eventTypes.CREATE_ROOM_RESULT, {
+          //   type: eventTypes.CREATE_ROOM_RESULT,
+          //   result
+        });
+      });
     });
 
     socket.on(eventTypes.JOIN_ROOM, action => {

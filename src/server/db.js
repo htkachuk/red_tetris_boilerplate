@@ -21,8 +21,6 @@ module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
   if (existedUser !== null) {
-    // console.log("Result is: user exists");
-    // console.log(existedUser);
     return JSON.stringify({ error: "user exists" });
   } else {
     let user = {
@@ -33,6 +31,26 @@ module.exports.createUser = async action => {
       connection: action.id
     };
     const result = await users.insertOne(user);
+    return JSON.stringify({ result: result["ops"] });
+  }
+};
+
+module.exports.createRoom = async action => {
+  const rooms = db.collection("rooms");
+  const existedRoom = await rooms.findOne({ name: action.name });
+  if (existedRoom !== null) {
+    return JSON.stringify({ error: "Room exists" });
+  } else {
+    const users = db.collection("users");
+    const currentUser = await users.findOne({ connection: action.id });
+    if (currentUser === null)
+      return JSON.stringify({ error: "user doesn't exists" });
+    const room = {
+      name: action.name,
+      participants: [currentUser.login],
+      leader: currentUser.login
+    };
+    const result = await rooms.insertOne(room);
     return JSON.stringify({ result: result["ops"] });
   }
 };
@@ -55,47 +73,33 @@ module.exports.loginUser = async action => {
   }
 };
 
-module.exports.updateUser = async (req, res) => {
-  const users = db.collection("users");
-  const user = await users.findOne({ login: req.body.login });
-  if (user !== null) {
-    res.json({ error: "user exists" });
-  } else {
-    user.totalScore = req.body.totalScore;
-    const result = await events.findOneAndUpdate(
-      { login: user.login },
-      { $set: user }
-    );
-    res.json({ result });
-  }
-  return res;
-};
+// module.exports.updateUser = async (req, res) => {
+//   const users = db.collection("users");
+//   const user = await users.findOne({ login: req.body.login });
+//   if (user !== null) {
+//     res.json({ error: "user exists" });
+//   } else {
+//     user.totalScore = req.body.totalScore;
+//     const result = await events.findOneAndUpdate(
+//       { login: user.login },
+//       { $set: user }
+//     );
+//     res.json({ result });
+//   }
+//   return res;
+// };
 
-module.exports.deleteUser = async (req, res) => {
-  const users = db.collection("users");
-  const result = await users.findOneAndDelete({ login: req.body.login });
-  res.json({ result });
-  return res;
-};
+// module.exports.deleteUser = async (req, res) => {
+//   const users = db.collection("users");
+//   const result = await users.findOneAndDelete({ login: req.body.login });
+//   res.json({ result });
+//   return res;
+// };
+
 module.exports.getRoom = async (req, res) => {
   const rooms = db.collection("rooms");
   const result = await rooms.findOne({ name: req.body.name });
   res.json({ result });
-  return res;
-};
-
-module.exports.createRoom = async (req, res) => {
-  let rooms = db.collection("rooms");
-  if ((await rooms.findOne({ name: req.body.name })) !== None) {
-    res.json({ error: "user doesn't exists" });
-  } else {
-    let room = {
-      name: req.body.mame,
-      participants: []
-    };
-    let result = await rooms.insertOne(room);
-    res.json({ result: result["ops"] });
-  }
   return res;
 };
 
