@@ -45,8 +45,8 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.LOGIN, action => {
+      action.id = socket.id;
       databaseInstance.loginUser(action).then(result => {
-        action.id = socket.id;
         socket.emit(eventTypes.LOGIN_RESULT, {
           type: eventTypes.LOGIN_RESULT,
           result
