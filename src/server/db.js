@@ -2,7 +2,7 @@ import * as helpers from "./helpers";
 
 const MongoClient = require("mongodb").MongoClient;
 const url = "mongodb://localhost:27017";
-let client = new MongoClient(url);
+const client = new MongoClient(url);
 const dbName = "red_tetris";
 let db;
 client.connect().then(client => {
