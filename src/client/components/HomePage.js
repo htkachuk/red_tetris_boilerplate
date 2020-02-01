@@ -6,12 +6,12 @@ import Button from "react-bootstrap/Button";
 
 const HomePage = props => (
   <div>
-    <div className="header-text">Red Tetris</div>
-    <div className="description-text">
+    <div className="txt-header">Red Tetris</div>
+    <div className="txt-description">
       Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
       ligula eget dolor. Aenean massa.
     </div>
-    <div className="middle-text py-4">Ready?</div>
+    <div className="txt-middle py-4">Ready?</div>
     <Button
       variant="danger"
       className="btn-std"
@@ -25,7 +25,7 @@ const HomePage = props => (
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      changePage: () => push("/home")
+      changePage: () => push("/login")
     },
     dispatch
   );
