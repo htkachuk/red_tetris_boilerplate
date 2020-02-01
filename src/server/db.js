@@ -12,20 +12,17 @@ client.connect().then(client => {
 module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
-  const validationResult = await helpers.createUserValidation(
-    existedUser
-  );
+  const validationResult = await helpers.createUserValidation(existedUser);
   if (validationResult.result !== "error") return validationResult;
-    let user = {
-      login: action.login,
-      password: action.password,
-      totalScore: 0,
-      roomName: null,
-      connection: action.id
-    };
-    const result = await users.insertOne(user);
-    return JSON.stringify({ result: result["ops"] });
-  }
+  const user = {
+    login: action.login,
+    password: action.password,
+    totalScore: 0,
+    roomName: null,
+    connection: action.id
+  };
+  const result = await users.insertOne(user);
+  return JSON.stringify({ result: result["ops"] });
 };
 
 module.exports.createRoom = async action => {
