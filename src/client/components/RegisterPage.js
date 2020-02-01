@@ -9,7 +9,7 @@ import Form from "react-bootstrap/Form";
 const RegisterPage = props => (
   <div>
     <div className="txt-secondary">Sign In</div>
-    <Form.Group controlId="loginForm">
+    <Form.Group controlId="registerForm">
       <Form.Control className="input-std" type="email" placeholder="Login" />
       <Form.Control
         className="input-std"
@@ -33,7 +33,7 @@ const RegisterPage = props => (
     <Button
       variant="danger"
       className="btn-std"
-      onClick={() => props.changePage("/lobby")}
+      onClick={() => props.register()}
     >
       Sign In
     </Button>
@@ -43,7 +43,11 @@ const RegisterPage = props => (
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      changePage: page => push(page)
+      changePage: page => push(page),
+      register: () => {
+        alert("Login!");
+        return push("/lobby");
+      }
     },
     dispatch
   );

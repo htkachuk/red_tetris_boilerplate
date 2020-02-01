@@ -1,11 +1,10 @@
 import React from "react";
-import { wsConnect } from "../middleware/socketMiddleware";
 import { connect } from "react-redux";
 import socketIOClient from "socket.io-client";
 import HomePage from "../components/HomePage";
 import RegisterPage from "../components/RegisterPage";
 import LoginPage from "../components/LoginPage";
-import { Route, Link } from "react-router-dom";
+import { Route } from "react-router-dom";
 
 class App extends React.Component {
   constructor(props) {
@@ -13,6 +12,7 @@ class App extends React.Component {
     this.state = {
       message: props.message,
       response: props.message,
+      socket: null,
       endpoint: "http://0.0.0.0:3004"
     };
   }
@@ -20,18 +20,14 @@ class App extends React.Component {
   componentDidMount() {
     const { endpoint } = this.state;
     const socket = socketIOClient(endpoint);
+    this.setState({ socket });
+    this.props.dispatch({ type: "SOCKET_CONNECTED", socket: socket });
   }
 
   render() {
-    // const { response } = this.state;
+    console.log(this.state);
     return (
       <div>
-        <header>
-          <Link to="/">Home</Link>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
-        </header>
-
         <main>
           <Route exact path="/" component={HomePage} />
           <Route exact path="/login" component={LoginPage} />
@@ -47,4 +43,5 @@ const mapStateToProps = state => {
     message: state.message
   };
 };
-export default connect(mapStateToProps, null)(App);
+
+export default connect(mapStateToProps)(App);
