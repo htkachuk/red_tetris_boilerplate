@@ -2,31 +2,45 @@ import React from "react";
 import ReactDom from "react-dom";
 import createLogger from "redux-logger";
 import thunk from "redux-thunk";
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, compose } from "redux";
 import { Provider } from "react-redux";
 import { storeStateMiddleWare } from "./middleware/storeStateMiddleWare";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { socketMiddleware } from "./middleware/socketMiddleware";
 import reducer from "./reducers";
 import App from "./containers/app";
-import { alert } from "./actions/alert";
+import { register } from "./actions/register";
 import { ConnectedRouter } from "connected-react-router";
 import { createBrowserHistory } from "history";
-// import "./styles.css";
 
 export const history = createBrowserHistory();
 
-const initialState = {};
+const initialState = {
+  user: {
+    login: null,
+    password: null,
+    totalScore: null,
+    roomName: null
+  },
+  room: {
+    name: null,
+    participants: null
+  },
+  socket: null,
+  message: null
+};
 
 const store = createStore(
   connectRouter(history)(reducer),
   initialState,
-  applyMiddleware(
-    thunk,
-    routerMiddleware(history),
-    createLogger(),
-    socketMiddleware,
-    storeStateMiddleWare
+  compose(
+    applyMiddleware(
+      thunk,
+      routerMiddleware(history),
+      createLogger(),
+      socketMiddleware,
+      storeStateMiddleWare
+    )
   )
 );
 
@@ -41,4 +55,4 @@ ReactDom.render(
   document.getElementById("tetris")
 );
 
-store.dispatch(alert("Soon, will be here a fantastic Tetris ..."));
+store.dispatch(register("user", "password"));
