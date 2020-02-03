@@ -26,7 +26,7 @@ const logoutHandler = state => {
   });
 };
 
-export const socketActions = (state = initialState, action) => {
+const socketActions = (state = initialState, action) => {
   switch (action.type) {
     case ACTIONS.USER_LOGIN:
       return loginHandlers(state, action);
@@ -42,3 +42,14 @@ export const socketActions = (state = initialState, action) => {
       return state;
   }
 };
+
+const reducer = (state = null, action) => {
+  switch (action.type) {
+    case "SOCKET_CONNECTED":
+      return action.socket;
+    default:
+      return state;
+  }
+};
+
+export default reducer;

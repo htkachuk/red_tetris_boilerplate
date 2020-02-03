@@ -7,7 +7,6 @@ export const wsDisconnected = host => ({ type: "WS_DISCONNECTED", host });
 
 export const socketMiddleware = store => {
   let socket = null;
-  console.log(store);
 
   const onOpen = store => event => {
     console.log("websocket open", event.target.url);
@@ -35,37 +34,41 @@ export const socketMiddleware = store => {
 
   // the middleware part of this function
   return store => next => action => {
-    switch (action.type) {
-      case "WS_CONNECT":
-        if (socket !== null) {
-          socket.close();
-        }
+    let state = store.getState();
+    // console.log(action.type);
+    let returnValue = next(action);
+    window.top.state = store.getState();
 
-        // connect to the remote host
-        socket = new WebSocket(action.host);
+    return returnValue;
+    // console.log("In action middleware");
+    // switch (action.type) {
+    //   case "WS_CONNECT":
+    //     if (socket !== null) {
+    //       socket.close();
+    //     }
+    //     socket = new WebSocket(action.host);
 
-        // websocket handlers
-        socket.onmessage = onMessage(store);
-        socket.onclose = onClose(store);
-        socket.onopen = onOpen(store);
+    //     socket.onmessage = onMessage(store);
+    //     socket.onclose = onClose(store);
+    //     socket.onopen = onOpen(store);
 
-        break;
-      case "WS_DISCONNECT":
-        if (socket !== null) {
-          socket.close();
-        }
-        socket = null;
-        console.log("websocket closed");
-        break;
-      case "NEW_MESSAGE":
-        console.log("sending a message", action.msg);
-        socket.send(
-          JSON.stringify({ command: action.type, message: action.message })
-        );
-        break;
-      default:
-        console.log("the next action:", action);
-        return next(action);
-    }
+    //     break;
+    //   case "WS_DISCONNECT":
+    //     if (socket !== null) {
+    //       socket.close();
+    //     }
+    //     socket = null;
+    //     console.log("websocket closed");
+    //     break;
+    //   case "NEW_MESSAGE":
+    //     console.log("sending a message", action.msg);
+    //     socket.send(
+    //       JSON.stringify({ command: action.type, message: action.message })
+    //     );
+    //     break;
+    //   default:
+    //     console.log("the next action:", action);
+    //     return next(action);
+    // }
   };
 };

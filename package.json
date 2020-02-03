@@ -16,6 +16,7 @@
     "bootstrap": "^4.4.1",
     "connected-react-router": "^6.6.1",
     "history": "^4.10.1",
+    "js-cookie": "^2.2.1",
     "mongodb": "^3.2.6",
     "mongoose": "^5.5.12",
     "react": "^16.4.0",
