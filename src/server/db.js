@@ -13,7 +13,8 @@ module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
   const validationResult = await helpers.createUserValidation(existedUser);
-  if (validationResult.result !== "error") return validationResult;
+  if (validationResult.result === "error")
+    return JSON.stringify(validationResult);
   const user = {
     login: action.login,
     password: action.password,
@@ -22,7 +23,7 @@ module.exports.createUser = async action => {
     connection: action.id
   };
   const result = await users.insertOne(user);
-  return JSON.stringify({ result: result["ops"] });
+  return JSON.stringify({ result: result["ops"][0] });
 };
 
 module.exports.createRoom = async action => {
@@ -55,7 +56,8 @@ module.exports.loginUser = async action => {
   const user = await users.findOne({ login: action.login });
   const validationResult = await helpers.loginValidation(user, action.password);
 
-  if (validationResult.result !== "error") return validationResult;
+  if (validationResult.result === "error")
+    return JSON.stringify(validationResult);
   user.connection = action.id;
   const result = await users.findOneAndUpdate(
     { login: action.login },
