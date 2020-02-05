@@ -7,7 +7,6 @@ import { Provider } from "react-redux";
 import { storeStateMiddleWare } from "./middleware/storeStateMiddleWare";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { socketMiddleware } from "./middleware/socketMiddleware";
-import messageReducer from "./reducers/message";
 import userReducer from "./reducers/user";
 import roomReducer from "./reducers/room";
 import socketReducer from "./reducers/socket";
@@ -28,8 +27,7 @@ const initialState = {
     name: null,
     participants: null
   },
-  socket: null,
-  message: 0
+  socket: null
 };
 
 const store = createStore(
@@ -37,8 +35,7 @@ const store = createStore(
     router: connectRouter(history),
     user: userReducer,
     room: roomReducer,
-    socket: socketReducer,
-    message: messageReducer
+    socket: socketReducer
   }),
   initialState,
   compose(
@@ -46,13 +43,12 @@ const store = createStore(
       thunk,
       routerMiddleware(history),
       createLogger(),
-      storeStateMiddleWare
-      // socketMiddleware
+      storeStateMiddleWare,
+      socketMiddleware
     )
   )
 );
 
-// const render = () =>
 ReactDom.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
@@ -63,7 +59,3 @@ ReactDom.render(
   </Provider>,
   document.getElementById("tetris")
 );
-
-// render();
-store.dispatch(register("user", "password"));
-// store.subscribe(render);

@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
+import { register } from "../actions/register";
 
 const RegisterPage = props => (
   <div>
@@ -45,7 +46,7 @@ const mapDispatchToProps = dispatch =>
     {
       changePage: page => push(page),
       register: () => {
-        alert("Login!");
+        dispatch(register("user123weооw", "password"));
         return push("/lobby");
       }
     },

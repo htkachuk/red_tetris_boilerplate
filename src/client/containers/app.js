@@ -10,8 +10,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: props.message,
-      response: props.message,
+      room: null,
       socket: null,
       endpoint: "http://0.0.0.0:3004"
     };
@@ -39,7 +38,7 @@ class App extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    message: state.message
+    room: state.room
   };
 };
 

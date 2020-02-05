@@ -1,74 +1,52 @@
 import * as reducers from "../reducers";
-export const wsConnect = host => ({ type: "WS_CONNECT", host });
-export const wsConnecting = host => ({ type: "WS_CONNECTING", host });
-export const wsConnected = host => ({ type: "WS_CONNECTED", host });
-export const wsDisconnect = host => ({ type: "WS_DISCONNECT", host });
-export const wsDisconnected = host => ({ type: "WS_DISCONNECTED", host });
+import { REGISTER } from "../actions/register";
+import { LOGIN } from "../actions/login";
+import * as eventTypes from "../actions/eventTypes";
 
 export const socketMiddleware = store => {
-  let socket = null;
-
-  const onOpen = store => event => {
-    console.log("websocket open", event.target.url);
-    store.dispatch(wsConnected(event.target.url));
+  const handleRegisterResult = action => {
+    console.log(action);
   };
 
-  const onClose = store => () => {
-    store.dispatch(wsDisconnected());
+  const handleLoginResult = action => {
+    console.log("IT TOO!");
   };
 
-  const onMessage = store => event => {
-    const payload = JSON.parse(event.data);
-    console.log("receiving server message");
-    switch (payload.type) {
-      case "UPDATE_STATE":
-        store.dispatch(reducers.updateState(payload.boards, payload.players));
+  const handleJoinRoomResult = action => {
+    console.log("IT WORKS!");
+  };
+
+  const handleCreateRoomResult = action => {
+    console.log("IT TOO!");
+  };
+
+  const handleLockRoomResult = action => {
+    console.log("IT TOO!");
+  };
+
+  return next => action => {
+    const storage = store.getState();
+    let socket = storage.socket;
+    switch (action.type) {
+      case "SOCKET_CONNECTED":
+        socket = action.socket;
+        socket.on(eventTypes.REGISTER_RESULT, handleRegisterResult);
+        socket.on(eventTypes.LOGIN_RESULT, handleLoginResult);
+        socket.on(eventTypes.CREATE_ROOM_RESULT, handleCreateRoomResult);
+        socket.on(eventTypes.JOIN_ROOM_RESULT, handleJoinRoomResult);
+        socket.on(eventTypes.LOCK_ROOM_RESULT, handleLockRoomResult);
         break;
-      case "UPDATE_STATS":
-        store.dispatch(reducers.updateStats(payload.stats));
+      case REGISTER:
+        socket.emit(REGISTER, action);
         break;
-      default:
+      case LOGIN:
+        socket = store.socket;
+        socket.emit(LOGIN, action);
+        // socket.send(
+        //   JSON.stringify({ command: action.type, message: action.message })
+        // );
         break;
     }
-  };
-
-  // the middleware part of this function
-  return store => next => action => {
-    let state = store.getState();
-    // console.log(action.type);
-    let returnValue = next(action);
-    window.top.state = store.getState();
-
-    return returnValue;
-    // console.log("In action middleware");
-    // switch (action.type) {
-    //   case "WS_CONNECT":
-    //     if (socket !== null) {
-    //       socket.close();
-    //     }
-    //     socket = new WebSocket(action.host);
-
-    //     socket.onmessage = onMessage(store);
-    //     socket.onclose = onClose(store);
-    //     socket.onopen = onOpen(store);
-
-    //     break;
-    //   case "WS_DISCONNECT":
-    //     if (socket !== null) {
-    //       socket.close();
-    //     }
-    //     socket = null;
-    //     console.log("websocket closed");
-    //     break;
-    //   case "NEW_MESSAGE":
-    //     console.log("sending a message", action.msg);
-    //     socket.send(
-    //       JSON.stringify({ command: action.type, message: action.message })
-    //     );
-    //     break;
-    //   default:
-    //     console.log("the next action:", action);
-    //     return next(action);
-    // }
+    return next(action);
   };
 };
