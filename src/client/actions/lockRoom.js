@@ -1,4 +1,4 @@
-export const LOCK_ROOM = "LOCK_ROOM";
+import { LOCK_ROOM } from "./eventTypes";
 
 export const lockRoom = () => {
   return {

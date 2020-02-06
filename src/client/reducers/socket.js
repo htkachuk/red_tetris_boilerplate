@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { SOCKET_CONNECTED } from "./eventTypes";
 
 const id = Cookies.get("user");
 const initialState = id ? { user: { id } } : { user: { username: "" } };
@@ -45,7 +46,7 @@ const socketActions = (state = initialState, action) => {
 
 const reducer = (state = null, action) => {
   switch (action.type) {
-    case "SOCKET_CONNECTED":
+    case SOCKET_CONNECTED:
       return action.socket;
     default:
       return state;

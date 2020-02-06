@@ -1,4 +1,4 @@
-export const CREATE_ROOM = "CREATE_ROOM";
+import { CREATE_ROOM } from "./eventTypes";
 
 export const createRoom = name => {
   return {

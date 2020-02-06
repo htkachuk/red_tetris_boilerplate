@@ -1,7 +1,7 @@
-export const END_GAME = "END_GAME";
+import { END_GAME } from "./eventTypes";
 
 export const endGame = () => {
   return {
-    type: "END_GAME"
+    type: END_GAME
   };
 };

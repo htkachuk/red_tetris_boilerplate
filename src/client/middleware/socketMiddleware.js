@@ -1,6 +1,4 @@
 import * as reducers from "../reducers";
-import { REGISTER } from "../actions/register";
-import { LOGIN } from "../actions/login";
 import * as eventTypes from "../actions/eventTypes";
 
 export const socketMiddleware = store => {
@@ -28,7 +26,7 @@ export const socketMiddleware = store => {
     const storage = store.getState();
     let socket = storage.socket;
     switch (action.type) {
-      case "SOCKET_CONNECTED":
+      case eventTypes.SOCKET_CONNECTED:
         socket = action.socket;
         socket.on(eventTypes.REGISTER_RESULT, handleRegisterResult);
         socket.on(eventTypes.LOGIN_RESULT, handleLoginResult);
@@ -36,15 +34,23 @@ export const socketMiddleware = store => {
         socket.on(eventTypes.JOIN_ROOM_RESULT, handleJoinRoomResult);
         socket.on(eventTypes.LOCK_ROOM_RESULT, handleLockRoomResult);
         break;
-      case REGISTER:
-        socket.emit(REGISTER, action);
+      case eventTypes.REGISTER:
+        socket.emit(action.type, action);
         break;
-      case LOGIN:
-        socket = store.socket;
-        socket.emit(LOGIN, action);
-        // socket.send(
-        //   JSON.stringify({ command: action.type, message: action.message })
-        // );
+      case eventTypes.LOGIN:
+        socket.emit(action.type, action);
+        break;
+      case eventTypes.CREATE_ROOM:
+        socket.emit(action.type, action);
+        break;
+      case eventTypes.CREATE_ROOM:
+        socket.emit(action.type, action);
+        break;
+      case eventTypes.JOIN_ROOM:
+        socket.emit(action.type, action);
+        break;
+      case eventTypes.LOCK_ROOM:
+        socket.emit(action.type, action);
         break;
     }
     return next(action);

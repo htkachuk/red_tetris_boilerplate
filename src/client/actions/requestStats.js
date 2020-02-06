@@ -1,7 +1,7 @@
-export const REQUEST_STATS = "REQUEST_STATS";
+import { REQUEST_STATS } from "./eventTypes";
 
 export const requestStats = () => {
   return {
-    type: "REQUEST_STATS"
+    type: REQUEST_STATS
   };
 };

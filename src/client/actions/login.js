@@ -1,4 +1,4 @@
-export const LOGIN = "LOGIN";
+import { LOGIN } from "./eventTypes";
 
 export const login = (login, password) => {
   return {

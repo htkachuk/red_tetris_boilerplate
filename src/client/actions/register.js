@@ -1,4 +1,4 @@
-export const REGISTER = "REGISTER";
+import { REGISTER } from "./eventTypes";
 
 export const register = (login, password) => {
   return {

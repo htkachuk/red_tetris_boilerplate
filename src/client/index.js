@@ -11,7 +11,6 @@ import userReducer from "./reducers/user";
 import roomReducer from "./reducers/room";
 import socketReducer from "./reducers/socket";
 import App from "./containers/app";
-import { register } from "./actions/register";
 import { ConnectedRouter } from "connected-react-router";
 import { createBrowserHistory } from "history";
 

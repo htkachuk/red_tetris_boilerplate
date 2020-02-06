@@ -1,4 +1,4 @@
-export const JOIN_ROOM = "JOIN_ROOM";
+import { JOIN_ROOM } from "./eventTypes";
 
 export const joinRoom = name => {
   return {
