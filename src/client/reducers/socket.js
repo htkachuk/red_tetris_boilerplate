@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { SOCKET_CONNECTED } from "./eventTypes";
+import { SOCKET_CONNECTED } from "../actions/eventTypes";
 
 const id = Cookies.get("user");
 const initialState = id ? { user: { id } } : { user: { username: "" } };
