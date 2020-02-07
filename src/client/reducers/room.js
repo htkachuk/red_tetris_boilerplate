@@ -1,5 +1,5 @@
-import { JOIN_ROOM } from "../actions/joinRoom";
-import { CREATE_ROOM } from "../actions/createRoom";
+import { JOIN_ROOM } from "../actions/eventTypes";
+import { CREATE_ROOM } from "../actions/eventTypes";
 
 const reducer = (
   state = {

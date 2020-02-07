@@ -18,6 +18,10 @@ class LoginPage extends React.Component {
     };
   }
 
+  validateForm() {
+    return this.state.email.length > 0 && this.state.password.length > 0;
+  }
+
   handleEmailChange(e) {
     this.setState({ email: e.target.value });
   }
@@ -30,39 +34,44 @@ class LoginPage extends React.Component {
     return (
       <div>
         <div className="txt-secondary">Sign Up</div>
-        <Form.Group controlId="loginForm">
-          <Form.Control
-            className="input-std"
-            type="email"
-            placeholder="Login"
-            value={this.state.email}
-            onChange={this.handleEmailChange}
-          />
-          <Form.Control
-            className="input-std"
-            type="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handlePasswordChange}
-          />
-        </Form.Group>
-
-        <Nav.Link
-          className="txt-link mt-7"
-          href="#"
-          onClick={() => this.props.changePage("/register")}
-        >
-          Not registered yet?
-        </Nav.Link>
-        <Button
-          variant="danger"
-          className="btn-std"
-          onClick={() =>
+        <form
+          onSubmit={() =>
             this.props.login(this.state.email, this.state.password)
           }
         >
-          Sign Up
-        </Button>
+          <Form.Group>
+            <Form.Control
+              className="input-std"
+              type="email"
+              placeholder="Login"
+              value={this.state.email}
+              onChange={this.handleEmailChange}
+            />
+            <Form.Control
+              className="input-std"
+              type="password"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handlePasswordChange}
+            />
+          </Form.Group>
+
+          <Nav.Link
+            className="txt-link mt-7"
+            href="#"
+            onClick={() => this.props.changePage("/register")}
+          >
+            Not registered yet?
+          </Nav.Link>
+          <Button
+            variant="danger"
+            className="btn-std"
+            disabled={!this.validateForm()}
+            type="submit"
+          >
+            Sign Up
+          </Button>
+        </form>
       </div>
     );
   }

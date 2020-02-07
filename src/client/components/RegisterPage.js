@@ -12,10 +12,23 @@ class RegisterPage extends React.Component {
     super(props);
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.handlePasswordRepeatedChange = this.handlePasswordRepeatedChange.bind(
+      this
+    );
+    this.validateForm = this.validateForm.bind(this);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      passwordRepeated: ""
     };
+  }
+
+  validateForm() {
+    return (
+      this.state.passwordRepeated === this.state.password &&
+      this.state.email.length > 0 &&
+      this.state.password.length > 0
+    );
   }
 
   handleEmailChange(e) {
@@ -26,48 +39,59 @@ class RegisterPage extends React.Component {
     this.setState({ password: e.target.value });
   }
 
+  handlePasswordRepeatedChange(e) {
+    this.setState({ passwordRepeated: e.target.value });
+  }
+
   render() {
     return (
       <div>
         <div className="txt-secondary">Sign In</div>
-        <Form.Group controlId="registerForm">
-          <Form.Control
-            className="input-std"
-            type="email"
-            placeholder="Login"
-            value={this.state.email}
-            onChange={this.handleEmailChange}
-          />
-          <Form.Control
-            className="input-std"
-            type="password"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handlePasswordChange}
-          />
-          <Form.Control
-            className="input-std"
-            type="password"
-            placeholder="Repeat Password"
-          />
-        </Form.Group>
-
-        <Nav.Link
-          className="txt-link mt-0"
-          href="#"
-          onClick={() => this.props.changePage("/login")}
-        >
-          Have an account?
-        </Nav.Link>
-        <Button
-          variant="danger"
-          className="btn-std"
-          onClick={() =>
+        <form
+          onSubmit={() =>
             this.props.register(this.state.email, this.state.password)
           }
         >
-          Sign In
-        </Button>
+          <Form.Group>
+            <Form.Control
+              className="input-std"
+              type="email"
+              placeholder="Login"
+              value={this.state.email}
+              onChange={this.handleEmailChange}
+            />
+            <Form.Control
+              className="input-std"
+              type="password"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handlePasswordChange}
+            />
+            <Form.Control
+              className="input-std"
+              type="password"
+              placeholder="Repeat Password"
+              value={this.state.passwordRepeated}
+              onChange={this.handlePasswordRepeatedChange}
+            />
+          </Form.Group>
+
+          <Nav.Link
+            className="txt-link mt-0"
+            href="#"
+            onClick={() => this.props.changePage("/login")}
+          >
+            Have an account?
+          </Nav.Link>
+          <Button
+            variant="danger"
+            className="btn-std"
+            disabled={!this.validateForm()}
+            type="submit"
+          >
+            Sign In
+          </Button>
+        </form>
       </div>
     );
   }

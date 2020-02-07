@@ -1,5 +1,5 @@
-import { REGISTER } from "../actions/register";
-import { LOGIN } from "../actions/login";
+import { REGISTER } from "../actions/eventTypes";
+import { LOGIN } from "../actions/eventTypes";
 
 const reducer = (
   state = {
