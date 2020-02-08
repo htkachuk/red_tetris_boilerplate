@@ -35,7 +35,6 @@ const initEngine = io => {
     loginfo("Socket connected: " + socket.id);
 
     socket.on(eventTypes.REGISTER, action => {
-      action.id = socket.id;
       databaseInstance.createUser(action).then(result => {
         socket.emit(eventTypes.REGISTER_RESULT, {
           type: eventTypes.REGISTER_RESULT,
@@ -45,7 +44,6 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.LOGIN, action => {
-      action.id = socket.id;
       databaseInstance.loginUser(action).then(result => {
         socket.emit(eventTypes.LOGIN_RESULT, {
           type: eventTypes.LOGIN_RESULT,
@@ -55,7 +53,6 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.CREATE_ROOM, action => {
-      action.id = socket.id;
       databaseInstance.createRoom(action).then(result => {
         socket.emit(eventTypes.CREATE_ROOM_RESULT, {
           type: eventTypes.CREATE_ROOM_RESULT,
@@ -65,7 +62,6 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.JOIN_ROOM, action => {
-      action.id = socket.id;
       databaseInstance.joinRoom(action).then(result => {
         socket.emit(eventTypes.JOIN_ROOM_RESULT, {
           type: eventTypes.JOIN_ROOM_RESULT,
@@ -75,8 +71,12 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.LOCK_ROOM, action => {
-      // TODO: register
-      socket.emit(eventTypes.UPDATE_STATE, { type: "pong" });
+      databaseInstance.lockRoom(action).then(result => {
+        socket.emit(eventTypes.LOCK_ROOM_RESULT, {
+          type: eventTypes.LOCK_ROOM_RESULT,
+          result
+        });
+      });
     });
 
     socket.on(eventTypes.MOVE_UNIT, action => {

@@ -51,7 +51,8 @@ module.exports.createRoom = async action => {
   const room = {
     name: action.name,
     participants: [currentUser.login],
-    leader: currentUser.login
+    leader: currentUser.login,
+    isStarted: false
   };
   const resultRoom = await rooms.insertOne(room);
   await users.findOneAndUpdate(
@@ -108,6 +109,32 @@ module.exports.joinRoom = async action => {
     { name: action.name },
     { $set: existedRoom }
   );
+  existedRoom = await rooms.findOne({ name: action.name });
+  return { room: existedRoom };
+};
+
+module.exports.lockRoom = async action => {
+  let token = decodeJWT(action.token);
+  const rooms = db.collection("rooms");
+  let existedRoom = await rooms.findOne({ name: action.name });
+  const users = db.collection("users");
+  const currentUser = await users.findOne({ login: token.data.login });
+
+  if (existedRoom === null) {
+    return { error: "Room doesn't exists", result: "error" };
+  }
+  if (currentUser === null) {
+    return { error: "user doesn't exists", room: "error" };
+  }
+  if (existedRoom.leader === currentUser.login) {
+    return { error: "permission denied", result: "error" };
+  }
+  if (existedRoom.isStarted === true) {
+    return { error: "game have been started", result: "error" };
+  }
+
+  existedRoom.isStarted = true;
+  await rooms.findOneAndUpdate({ name: action.name }, { $set: existedRoom });
   existedRoom = await rooms.findOne({ name: action.name });
   return { room: existedRoom };
 };

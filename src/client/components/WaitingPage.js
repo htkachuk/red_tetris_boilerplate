@@ -48,9 +48,9 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       changePage: page => push(page),
-      lockRoom: () => {
+      lockRoom: token => {
         dispatch(lockRoom(token));
-        return push("/lobby");
+        return push("/game");
       }
     },
     dispatch
