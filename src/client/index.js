@@ -14,6 +14,7 @@ import tokenReducer from "./reducers/token";
 import App from "./containers/app";
 import { ConnectedRouter } from "connected-react-router";
 import { createBrowserHistory } from "history";
+import { persistStore, autoRehydrate } from "redux-persist";
 
 export const history = createBrowserHistory();
 
@@ -47,17 +48,20 @@ const store = createStore(
       createLogger(),
       storeStateMiddleWare,
       socketMiddleware
-    )
+    ),
+    autoRehydrate()
   )
 );
 
-ReactDom.render(
-  <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <div>
-        <App />
-      </div>
-    </ConnectedRouter>
-  </Provider>,
-  document.getElementById("tetris")
-);
+persistStore(store, {}, () => {
+  ReactDom.render(
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <div>
+          <App />
+        </div>
+      </ConnectedRouter>
+    </Provider>,
+    document.getElementById("tetris")
+  );
+});
