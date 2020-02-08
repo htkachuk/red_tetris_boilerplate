@@ -1,15 +1,16 @@
 import * as eventTypes from "../actions/eventTypes";
 import { registerResult } from "../actions/registerResult";
 import { loginResult } from "../actions/loginResult";
+import { updateRoom } from "../actions/updateRoom";
 
 export const socketMiddleware = store => {
   const handleRegisterResult = (action, store) => {
-    const actionObject = JSON.parse(action.result);
+    const actionObject = action.result;
     store.dispatch(registerResult(actionObject.token));
   };
 
   const handleLoginResult = (action, store) => {
-    const actionObject = JSON.parse(action.result);
+    const actionObject = action.result;
     store.dispatch(loginResult(actionObject.token));
   };
 
@@ -18,11 +19,27 @@ export const socketMiddleware = store => {
   };
 
   const handleCreateRoomResult = action => {
+    const actionObject = action.result.room;
     console.log(action);
+    store.dispatch(
+      updateRoom(
+        actionObject.name,
+        actionObject.type,
+        actionObject.participants
+      )
+    );
   };
 
   const handleLockRoomResult = action => {
+    const actionObject = action.result.room;
     console.log(action);
+    store.dispatch(
+      updateRoom(
+        actionObject.name,
+        actionObject.type,
+        actionObject.participants
+      )
+    );
   };
 
   return next => action => {

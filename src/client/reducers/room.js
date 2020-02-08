@@ -1,5 +1,4 @@
-import { JOIN_ROOM } from "../actions/eventTypes";
-import { CREATE_ROOM } from "../actions/eventTypes";
+import { JOIN_ROOM, CREATE_ROOM, UPDATE_ROOM } from "../actions/eventTypes";
 
 const reducer = (
   state = {
@@ -12,6 +11,13 @@ const reducer = (
     case JOIN_ROOM:
     case CREATE_ROOM:
       return { ...state, name: action.name };
+    case UPDATE_ROOM:
+      return {
+        ...state,
+        name: action.name,
+        type: action.roomType,
+        participants: action.participants
+      };
     default:
       return state;
   }
