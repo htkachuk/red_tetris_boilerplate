@@ -74,3 +74,10 @@ body {
   background-color: #1c2541;
   color: aliceblue;
 }
+
+.players-list {
+  background-color: #1c2541;
+  height: 200px;
+  width: 360px;
+  margin: auto;
+}

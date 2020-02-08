@@ -16,7 +16,7 @@ module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
   if (existedUser !== null) {
-    return JSON.stringify({ error: "user exists", result: "error" });
+    return { error: "user exists", result: "error" };
   }
   const user = {
     login: action.login,
@@ -25,15 +25,15 @@ module.exports.createUser = async action => {
     roomName: null
   };
   await users.insertOne(user);
-  return JSON.stringify({
+  return {
     token: generateJWT(user)
-  });
+  };
 };
 
 module.exports.createRoom = async action => {
   let token = decodeJWT(action.token);
   const rooms = db.collection("rooms");
-  const existedRoom = await rooms.findOne({ name: action.name });
+  let existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
 
@@ -58,7 +58,8 @@ module.exports.createRoom = async action => {
     { name: token.data.login },
     { $set: currentUser }
   );
-  return JSON.stringify({ result: resultRoom["ops"] });
+  existedRoom = await rooms.findOne({ name: action.name });
+  return { room: existedRoom };
 };
 
 module.exports.loginUser = async action => {
@@ -74,24 +75,24 @@ module.exports.loginUser = async action => {
   user.connection = action.id;
   await users.findOneAndUpdate({ login: action.login }, { $set: user });
   user = await users.findOne({ login: action.login });
-  return JSON.stringify({ token: generateJWT(user) });
+  return { token: generateJWT(user) };
 };
 
 module.exports.joinRoom = async action => {
   let token = decodeJWT(action.token);
   const rooms = db.collection("rooms");
-  const existedRoom = await rooms.findOne({ name: action.name });
+  let existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
 
   if (existedRoom === null) {
-    return JSON.stringify({ error: "Room doesn't exists", result: "error" });
+    return { error: "Room doesn't exists", result: "error" };
   }
   if (existedRoom.participants.length === 6) {
-    return JSON.stringify({ error: "Full room", result: "error" });
+    return { error: "Full room", result: "error" };
   }
   if (currentUser === null) {
-    return JSON.stringify({ error: "user doesn't exists", result: "error" });
+    return { error: "user doesn't exists", room: "error" };
   }
   if (currentUser.roomName !== null) {
     return { error: "user has room", result: "error" };
@@ -107,5 +108,6 @@ module.exports.joinRoom = async action => {
     { name: action.name },
     { $set: existedRoom }
   );
-  return JSON.stringify({ result: resultRoom["ops"] });
+  existedRoom = await rooms.findOne({ name: action.name });
+  return { room: existedRoom };
 };
