@@ -48,9 +48,10 @@ class RegisterPage extends React.Component {
       <div>
         <div className="txt-secondary">Sign In</div>
         <form
-          onSubmit={() =>
-            this.props.register(this.state.email, this.state.password)
-          }
+          onSubmit={() => {
+            event.preventDefault();
+            this.props.register(this.state.email, this.state.password);
+          }}
         >
           <Form.Group>
             <Form.Control

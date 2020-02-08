@@ -35,9 +35,10 @@ class LoginPage extends React.Component {
       <div>
         <div className="txt-secondary">Sign Up</div>
         <form
-          onSubmit={() =>
-            this.props.login(this.state.email, this.state.password)
-          }
+          onSubmit={() => {
+            event.preventDefault();
+            this.props.login(this.state.email, this.state.password);
+          }}
         >
           <Form.Group>
             <Form.Control

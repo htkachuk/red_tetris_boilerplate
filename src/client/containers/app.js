@@ -4,6 +4,7 @@ import socketIOClient from "socket.io-client";
 import HomePage from "../components/HomePage";
 import RegisterPage from "../components/RegisterPage";
 import LoginPage from "../components/LoginPage";
+import GameManagementPage from "../components/GameManagement";
 import { Route } from "react-router-dom";
 
 class App extends React.Component {
@@ -30,6 +31,7 @@ class App extends React.Component {
           <Route exact path="/" component={HomePage} />
           <Route exact path="/login" component={LoginPage} />
           <Route exact path="/register" component={RegisterPage} />
+          <Route exact path="/lobby" component={GameManagementPage} />
         </main>
       </div>
     );
