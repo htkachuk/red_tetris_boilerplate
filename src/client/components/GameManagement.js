@@ -2,11 +2,13 @@ import React from "react";
 import { push } from "connected-react-router";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { createRoom } from "../actions/createRoom";
 import { joinRoom } from "../actions/joinRoom";
-
 class GameManagementPage extends React.Component {
   constructor(props) {
     super(props);
@@ -46,67 +48,87 @@ class GameManagementPage extends React.Component {
     return (
       <div>
         <div className="txt-secondary">Game Management</div>
-        <form
-          onSubmit={() => {
-            event.preventDefault();
-            this.props.createRoom(
-              this.state.creationName,
-              this.state.type,
-              this.props.token
-            );
-          }}
-        >
-          <Form.Group>
-            <Form.Control
-              className="input-std"
-              type="text"
-              placeholder="Name"
-              value={this.state.creationName}
-              onChange={this.handleCreationNameChange}
-            />
-            <Form.Control
-              as="select"
-              className="input-std"
-              onChange={this.handleTypeChange}
-            >
-              <option>Solo</option>
-              <option>Multiplayer</option>
-            </Form.Control>
-          </Form.Group>
+        <Container fluid="md">
+          <Row className="justify-content-md-center">
+            <Col md="auto" className="mx-5">
+              <form
+                onSubmit={() => {
+                  event.preventDefault();
+                  this.props.createRoom(
+                    this.state.creationName,
+                    this.state.type,
+                    this.props.token
+                  );
+                }}
+              >
+                <Form.Group className="pt-5">
+                  <Form.Control
+                    className="input-std"
+                    type="text"
+                    placeholder="Name"
+                    value={this.state.creationName}
+                    onChange={this.handleCreationNameChange}
+                  />
+                  <Form.Control
+                    as="select"
+                    className="input-std"
+                    onChange={this.handleTypeChange}
+                  >
+                    <option>Solo</option>
+                    <option>Multiplayer</option>
+                  </Form.Control>
+                  <Form.Control
+                    type="text"
+                    className="input-std invisible"
+                  ></Form.Control>
+                </Form.Group>
 
-          <Button
-            variant="danger"
-            className="btn-std"
-            disabled={!this.validateCreateRoomForm()}
-            type="submit"
-          >
-            Create Game
-          </Button>
-        </form>
-        <form
-          onSubmit={() => {
-            event.preventDefault();
-            this.props.joinRoom(this.state.jointName, this.props.token);
-          }}
-        >
-          <Form.Group>
-            <Form.Control
-              className="input-std"
-              type="text"
-              placeholder="Name"
-              value={this.state.jointName}
-              onChange={this.handleJointNameChange}
-            />
-          </Form.Group>
-          <Button
-            variant="danger"
-            className="btn-std"
-            disabled={!this.validateJoinRoomForm()}
-            type="submit"
-          >
-            Join Rooms
-          </Button>
-        </form>
+                <Button
+                  variant="danger"
+                  className="btn-std"
+                  disabled={!this.validateCreateRoomForm()}
+                  type="submit"
+                >
+                  Create Game
+                </Button>
+              </form>
+            </Col>
+            <Col md="auto" className="mx-5">
+              <form
+                onSubmit={() => {
+                  event.preventDefault();
+                  this.props.joinRoom(this.state.jointName, this.props.token);
+                }}
+              >
+                <Form.Group className="pt-5">
+                  <Form.Control
+                    className="input-std"
+                    type="text"
+                    placeholder="Name"
+                    value={this.state.jointName}
+                    onChange={this.handleJointNameChange}
+                  />
+                  <Form.Control
+                    type="text"
+                    className="input-std invisible"
+                  ></Form.Control>
+                  <Form.Control
+                    type="text"
+                    className="input-std invisible"
+                  ></Form.Control>
+                </Form.Group>
+                <Button
+                  variant="danger"
+                  className="btn-std"
+                  disabled={!this.validateJoinRoomForm()}
+                  type="submit"
+                >
+                  Join Rooms
+                </Button>
+              </form>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }
