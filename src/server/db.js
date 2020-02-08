@@ -15,33 +15,37 @@ client.connect().then(client => {
 module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
-  const validationResult = await helpers.createUserValidation(existedUser);
-  if (validationResult.result === "error")
-    return JSON.stringify(validationResult);
+  if (existedUser !== null) {
+    return JSON.stringify({ error: "user exists", result: "error" });
+  }
   const user = {
     login: action.login,
     password: await argon2.hash(action.password),
     totalScore: 0,
-    roomName: null,
-    connection: action.id
+    roomName: null
   };
-  const result = await users.insertOne(user);
+  await users.insertOne(user);
   return JSON.stringify({
     token: generateJWT(user)
   });
 };
 
 module.exports.createRoom = async action => {
-  console.log(decodeJWT(action.token));
+  let token = decodeJWT(action.token);
   const rooms = db.collection("rooms");
   const existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
-  const currentUser = await users.findOne({ connection: action.id });
-  const validationResult = await helpers.createRoomValidation(
-    existedRoom,
-    currentUser
-  );
-  if (validationResult.result !== "error") return validationResult;
+  const currentUser = await users.findOne({ login: token.data.login });
+
+  if (existedRoom !== null) {
+    return { error: "room exists", result: "error" };
+  }
+  if (currentUser === null) {
+    return { error: "user doesn't exists", result: "error" };
+  }
+  if (currentUser.roomName !== null) {
+    return { error: "user has room", result: "error" };
+  }
 
   currentUser.room = action.name;
   const room = {
@@ -51,7 +55,7 @@ module.exports.createRoom = async action => {
   };
   const resultRoom = await rooms.insertOne(room);
   await users.findOneAndUpdate(
-    { connection: action.id },
+    { name: token.data.login },
     { $set: currentUser }
   );
   return JSON.stringify({ result: resultRoom["ops"] });
@@ -74,20 +78,29 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.joinRoom = async action => {
+  let token = decodeJWT(action.token);
   const rooms = db.collection("rooms");
   const existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
-  const currentUser = await users.findOne({ connection: action.id });
-  const validationResult = await helpers.joinRoomValidation(
-    existedRoom,
-    currentUser
-  );
-  if (validationResult.result !== "error") return validationResult;
+  const currentUser = await users.findOne({ login: token.data.login });
+
+  if (existedRoom === null) {
+    return JSON.stringify({ error: "Room doesn't exists", result: "error" });
+  }
+  if (existedRoom.participants.length === 6) {
+    return JSON.stringify({ error: "Full room", result: "error" });
+  }
+  if (currentUser === null) {
+    return JSON.stringify({ error: "user doesn't exists", result: "error" });
+  }
+  if (currentUser.roomName !== null) {
+    return { error: "user has room", result: "error" };
+  }
 
   existedRoom.participants.push(currentUser.login);
   currentUser.room = action.name;
   await users.findOneAndUpdate(
-    { connection: action.id },
+    { login: token.data.login },
     { $set: currentUser }
   );
   const resultRoom = await rooms.findOneAndUpdate(
