@@ -57,6 +57,7 @@ const mapDispatchToProps = dispatch =>
   );
 
 const mapStateToProps = state => ({
-  room: state.room
+  room: state.room,
+  token: state.token
 });
 export default connect(mapStateToProps, mapDispatchToProps)(WaitingPage);

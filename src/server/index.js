@@ -54,7 +54,8 @@ const initEngine = io => {
 
     socket.on(eventTypes.CREATE_ROOM, action => {
       databaseInstance.createRoom(action).then(result => {
-        socket.emit(eventTypes.CREATE_ROOM_RESULT, {
+        socket.join(result.room.name);
+        io.sockets.in(result.room.name).emit(eventTypes.CREATE_ROOM_RESULT, {
           type: eventTypes.CREATE_ROOM_RESULT,
           result
         });
@@ -63,7 +64,8 @@ const initEngine = io => {
 
     socket.on(eventTypes.JOIN_ROOM, action => {
       databaseInstance.joinRoom(action).then(result => {
-        socket.emit(eventTypes.JOIN_ROOM_RESULT, {
+        socket.join(result.room.name);
+        io.sockets.in(result.room.name).emit(eventTypes.JOIN_ROOM_RESULT, {
           type: eventTypes.JOIN_ROOM_RESULT,
           result
         });
@@ -72,7 +74,8 @@ const initEngine = io => {
 
     socket.on(eventTypes.LOCK_ROOM, action => {
       databaseInstance.lockRoom(action).then(result => {
-        socket.emit(eventTypes.LOCK_ROOM_RESULT, {
+        socket.join(result.room.name);
+        io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
           type: eventTypes.LOCK_ROOM_RESULT,
           result
         });
