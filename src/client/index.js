@@ -10,6 +10,7 @@ import { socketMiddleware } from "./middleware/socketMiddleware";
 import userReducer from "./reducers/user";
 import roomReducer from "./reducers/room";
 import socketReducer from "./reducers/socket";
+import tokenReducer from "./reducers/token";
 import App from "./containers/app";
 import { ConnectedRouter } from "connected-react-router";
 import { createBrowserHistory } from "history";
@@ -26,7 +27,8 @@ const initialState = {
     name: null,
     participants: null
   },
-  socket: null
+  socket: null,
+  token: null
 };
 
 const store = createStore(
@@ -34,7 +36,8 @@ const store = createStore(
     router: connectRouter(history),
     user: userReducer,
     room: roomReducer,
-    socket: socketReducer
+    socket: socketReducer,
+    token: tokenReducer
   }),
   initialState,
   compose(

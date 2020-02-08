@@ -1,25 +1,28 @@
-import * as reducers from "../reducers";
 import * as eventTypes from "../actions/eventTypes";
+import { registerResult } from "../actions/registerResult";
+import { loginResult } from "../actions/loginResult";
 
 export const socketMiddleware = store => {
-  const handleRegisterResult = action => {
-    console.log(action);
+  const handleRegisterResult = (action, store) => {
+    const actionObject = JSON.parse(action.result);
+    store.dispatch(registerResult(actionObject.token));
   };
 
-  const handleLoginResult = action => {
-    console.log("IT TOO!");
+  const handleLoginResult = (action, store) => {
+    const actionObject = JSON.parse(action.result);
+    store.dispatch(loginResult(actionObject.token));
   };
 
   const handleJoinRoomResult = action => {
-    console.log("IT WORKS!");
+    console.log(action);
   };
 
   const handleCreateRoomResult = action => {
-    console.log("IT TOO!");
+    console.log(action);
   };
 
   const handleLockRoomResult = action => {
-    console.log("IT TOO!");
+    console.log(action);
   };
 
   return next => action => {
@@ -28,8 +31,10 @@ export const socketMiddleware = store => {
     switch (action.type) {
       case eventTypes.SOCKET_CONNECTED:
         socket = action.socket;
-        socket.on(eventTypes.REGISTER_RESULT, handleRegisterResult);
-        socket.on(eventTypes.LOGIN_RESULT, handleLoginResult);
+        socket.on(eventTypes.REGISTER_RESULT, a =>
+          handleRegisterResult(a, store)
+        );
+        socket.on(eventTypes.LOGIN_RESULT, a => handleLoginResult(a, store));
         socket.on(eventTypes.CREATE_ROOM_RESULT, handleCreateRoomResult);
         socket.on(eventTypes.JOIN_ROOM_RESULT, handleJoinRoomResult);
         socket.on(eventTypes.LOCK_ROOM_RESULT, handleLockRoomResult);

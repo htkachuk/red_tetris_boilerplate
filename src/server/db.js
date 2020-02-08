@@ -1,10 +1,13 @@
 import * as helpers from "./helpers";
+import * as argon2 from "argon2";
+import { generateJWT, decodeJWT } from "./auth";
 
 const MongoClient = require("mongodb").MongoClient;
 const url = "mongodb://localhost:27017";
 const client = new MongoClient(url);
 const dbName = "red_tetris";
 let db;
+
 client.connect().then(client => {
   db = client.db(dbName);
 });
@@ -17,16 +20,19 @@ module.exports.createUser = async action => {
     return JSON.stringify(validationResult);
   const user = {
     login: action.login,
-    password: action.password,
+    password: await argon2.hash(action.password),
     totalScore: 0,
     roomName: null,
     connection: action.id
   };
   const result = await users.insertOne(user);
-  return JSON.stringify({ result: result["ops"][0] });
+  return JSON.stringify({
+    token: generateJWT(user)
+  });
 };
 
 module.exports.createRoom = async action => {
+  console.log(decodeJWT(action.token));
   const rooms = db.collection("rooms");
   const existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
@@ -53,17 +59,18 @@ module.exports.createRoom = async action => {
 
 module.exports.loginUser = async action => {
   const users = db.collection("users");
-  const user = await users.findOne({ login: action.login });
-  const validationResult = await helpers.loginValidation(user, action.password);
-
-  if (validationResult.result === "error")
-    return JSON.stringify(validationResult);
+  let user = await users.findOne({ login: action.login });
+  if (user === null) {
+    return { error: "user not exists", result: "error" };
+  }
+  const correctPassword = await argon2.verify(user.password, action.password);
+  if (!correctPassword) {
+    return { error: "wrong password", result: "error" };
+  }
   user.connection = action.id;
-  const result = await users.findOneAndUpdate(
-    { login: action.login },
-    { $set: user }
-  );
-  return JSON.stringify({ result });
+  await users.findOneAndUpdate({ login: action.login }, { $set: user });
+  user = await users.findOne({ login: action.login });
+  return JSON.stringify({ token: generateJWT(user) });
 };
 
 module.exports.joinRoom = async action => {
