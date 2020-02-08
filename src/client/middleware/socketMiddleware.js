@@ -15,7 +15,15 @@ export const socketMiddleware = store => {
   };
 
   const handleJoinRoomResult = action => {
+    const actionObject = action.result.room;
     console.log(action);
+    store.dispatch(
+      updateRoom(
+        actionObject.name,
+        actionObject.type,
+        actionObject.participants
+      )
+    );
   };
 
   const handleCreateRoomResult = action => {
