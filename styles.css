@@ -108,3 +108,19 @@ body {
   height: 28px;
   margin: 1px;
 }
+
+.game-box {
+  height: 180px;
+}
+
+#other-fields {
+  /* width: 300px; */
+  height: 400px;
+}
+
+.other-field {
+  background-color: #3a506b;
+  height: 170px;
+  max-width: 85px;
+  margin: 3% auto 3% auto;
+}
