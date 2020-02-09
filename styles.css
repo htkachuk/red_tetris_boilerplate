@@ -81,3 +81,30 @@ body {
   width: 360px;
   margin: auto;
 }
+
+.game-frame {
+  background-color: #1c2541;
+}
+
+.btn-corner {
+  width: 100px;
+  height: 30px;
+  font-size: 20px;
+  line-height: 20px;
+  background: #e22020;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+
+#game-field {
+  width: 300px;
+  height: 600px;
+}
+
+.game-unit {
+  background-color: #3a506b;
+  font-size: 10px;
+  height: 28px;
+  margin: 1px;
+}
