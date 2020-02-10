@@ -1,4 +1,5 @@
 import { pieces } from "../constants/pieces";
+import colors from "../constants/colors";
 import Piece from "./Piece";
 
 class Game {
@@ -12,7 +13,7 @@ class Game {
 
   getPiece() {
     const index = Math.floor(Math.random() * Math.floor(pieces.length));
-    return Piece(pieces[index], color[index]);
+    return Piece(pieces[index], colors[index]);
   }
 
   addSpeed() {
