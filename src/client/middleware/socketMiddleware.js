@@ -2,6 +2,7 @@ import * as eventTypes from "../actions/eventTypes";
 import { registerResult } from "../actions/registerResult";
 import { loginResult } from "../actions/loginResult";
 import { updateRoom } from "../actions/updateRoom";
+import { push } from "connected-react-router";
 
 export const socketMiddleware = store => {
   const handleRegisterResult = (action, store) => {
@@ -16,7 +17,6 @@ export const socketMiddleware = store => {
 
   const handleJoinRoomResult = action => {
     const actionObject = action.result.room;
-    console.log(action);
     store.dispatch(
       updateRoom(
         actionObject.name,
@@ -28,7 +28,6 @@ export const socketMiddleware = store => {
 
   const handleCreateRoomResult = action => {
     const actionObject = action.result.room;
-    console.log(action);
     store.dispatch(
       updateRoom(
         actionObject.name,
@@ -40,7 +39,6 @@ export const socketMiddleware = store => {
 
   const handleLockRoomResult = action => {
     const actionObject = action.result.room;
-    console.log(action);
     store.dispatch(
       updateRoom(
         actionObject.name,
@@ -48,6 +46,7 @@ export const socketMiddleware = store => {
         actionObject.participants
       )
     );
+    push("/game");
   };
 
   return next => action => {

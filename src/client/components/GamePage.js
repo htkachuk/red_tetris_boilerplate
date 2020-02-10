@@ -29,7 +29,6 @@ class GamePage extends React.Component {
         rows,
       []
     );
-    console.log(contendersGrid);
     return (
       <div className="h-100 w-100">
         <form
@@ -98,7 +97,6 @@ const mapDispatchToProps = dispatch =>
       changePage: page => push(page),
       lockRoom: token => {
         dispatch(lockRoom(token));
-        return push("/game");
       }
     },
     dispatch

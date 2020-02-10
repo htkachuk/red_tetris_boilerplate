@@ -35,7 +35,7 @@ module.exports.createRoom = async action => {
   const rooms = db.collection("rooms");
   let existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
-  const currentUser = await users.findOne({ login: token.data.login });
+  let currentUser = await users.findOne({ login: token.data.login });
 
   if (existedRoom !== null) {
     return { error: "room exists", result: "error" };
@@ -47,7 +47,6 @@ module.exports.createRoom = async action => {
     return { error: "user has room", result: "error" };
   }
 
-  currentUser.room = action.name;
   const room = {
     name: action.name,
     participants: [currentUser.login],
@@ -55,8 +54,9 @@ module.exports.createRoom = async action => {
     isStarted: false
   };
   const resultRoom = await rooms.insertOne(room);
+  currentUser.roomName = action.name;
   await users.findOneAndUpdate(
-    { name: token.data.login },
+    { login: token.data.login },
     { $set: currentUser }
   );
   existedRoom = await rooms.findOne({ name: action.name });
@@ -84,7 +84,7 @@ module.exports.joinRoom = async action => {
   const rooms = db.collection("rooms");
   let existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
-  const currentUser = await users.findOne({ login: token.data.login });
+  let currentUser = await users.findOne({ login: token.data.login });
 
   if (existedRoom === null) {
     return { error: "Room doesn't exists", result: "error" };
@@ -100,7 +100,7 @@ module.exports.joinRoom = async action => {
   }
 
   existedRoom.participants.push(currentUser.login);
-  currentUser.room = action.name;
+  currentUser.roomName = action.name;
   await users.findOneAndUpdate(
     { login: token.data.login },
     { $set: currentUser }
@@ -116,17 +116,20 @@ module.exports.joinRoom = async action => {
 module.exports.lockRoom = async action => {
   let token = decodeJWT(action.token);
   const rooms = db.collection("rooms");
-  let existedRoom = await rooms.findOne({ name: action.name });
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
+
+  if (currentUser === null) {
+    return { error: "user doesn't exists", room: "error" };
+  }
+
+  const roomName = currentUser.roomName;
+  let existedRoom = await rooms.findOne({ name: roomName });
 
   if (existedRoom === null) {
     return { error: "Room doesn't exists", result: "error" };
   }
-  if (currentUser === null) {
-    return { error: "user doesn't exists", room: "error" };
-  }
-  if (existedRoom.leader === currentUser.login) {
+  if (existedRoom.leader !== currentUser.login) {
     return { error: "permission denied", result: "error" };
   }
   if (existedRoom.isStarted === true) {
@@ -134,7 +137,7 @@ module.exports.lockRoom = async action => {
   }
 
   existedRoom.isStarted = true;
-  await rooms.findOneAndUpdate({ name: action.name }, { $set: existedRoom });
-  existedRoom = await rooms.findOne({ name: action.name });
+  await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });
+  existedRoom = await rooms.findOne({ name: roomName });
   return { room: existedRoom };
 };

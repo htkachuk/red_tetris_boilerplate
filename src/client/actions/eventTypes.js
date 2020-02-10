@@ -4,6 +4,7 @@ export const END_GAME = "END_GAME";
 export const JOIN_ROOM = "JOIN_ROOM";
 export const LOCK_ROOM = "LOCK_ROOM";
 export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
 export const MOVE_UNIT = "MOVE_UNIT";
 export const REGISTER = "REGISTER";
 export const UPDATE_STATS = "UPDATE_STATS";
