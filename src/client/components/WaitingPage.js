@@ -50,7 +50,6 @@ const mapDispatchToProps = dispatch =>
       changePage: page => push(page),
       lockRoom: token => {
         dispatch(lockRoom(token));
-        return push("/game");
       }
     },
     dispatch

@@ -74,7 +74,6 @@ const initEngine = io => {
 
     socket.on(eventTypes.LOCK_ROOM, action => {
       databaseInstance.lockRoom(action).then(result => {
-        socket.join(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
           type: eventTypes.LOCK_ROOM_RESULT,
           result
