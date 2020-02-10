@@ -46,7 +46,7 @@ export const socketMiddleware = store => {
         actionObject.participants
       )
     );
-    push("/game");
+    store.dispatch(push("/game"));
   };
 
   return next => action => {
