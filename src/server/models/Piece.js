@@ -1,3 +1,6 @@
+import colors from "../constants/colors";
+import pieces from "../constants/pieces";
+
 class Piece {
   rotateLeft(piece) {
     return piece.push(piece.shift());
