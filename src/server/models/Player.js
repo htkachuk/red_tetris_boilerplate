@@ -1,12 +1,6 @@
 import { rowsCount, columnsCount } from "../constants/board";
 
 class Player {
-  constructor(currentGame) {
-    this.game = currentGame;
-    this.score = 0;
-    this.board = this.newBoard();
-  }
-
   newBoard() {
     let board = [];
 
