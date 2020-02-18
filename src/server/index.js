@@ -2,6 +2,7 @@ import fs from "fs";
 import debug from "debug";
 import * as databaseInstance from "./db";
 import * as eventTypes from "./eventTypes";
+import Player from "./models/Player";
 
 const logerror = debug("tetris:error"),
   loginfo = debug("tetris:info");
@@ -63,7 +64,7 @@ const initEngine = io => {
     });
 
     socket.on(eventTypes.JOIN_ROOM, action => {
-      databaseInstance.joinRoom(action).then(result => {
+      Player.joinRoom(action).then(result => {
         socket.join(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.JOIN_ROOM_RESULT, {
           type: eventTypes.JOIN_ROOM_RESULT,
@@ -74,10 +75,17 @@ const initEngine = io => {
 
     socket.on(eventTypes.LOCK_ROOM, action => {
       databaseInstance.lockRoom(action).then(result => {
-        io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
-          type: eventTypes.LOCK_ROOM_RESULT,
-          result
-        });
+        console.log(result);
+        if (result.result === "ok")
+          io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
+            type: eventTypes.LOCK_ROOM_RESULT,
+            result
+          });
+        else
+          socket.emit(eventTypes.LOCK_ROOM_RESULT, {
+            type: eventTypes.LOCK_ROOM_RESULT,
+            result
+          });
       });
     });
 

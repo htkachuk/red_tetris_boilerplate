@@ -1,11 +1,12 @@
 import * as argon2 from "argon2";
 import { generateJWT, decodeJWT } from "./auth";
+import Player from "./models/Player";
 
 const MongoClient = require("mongodb").MongoClient;
 const url = "mongodb://localhost:27017";
 const client = new MongoClient(url);
 const dbName = "red_tetris";
-let db;
+export let db;
 
 client.connect().then(client => {
   db = client.db(dbName);
@@ -14,14 +15,17 @@ client.connect().then(client => {
 module.exports.createUser = async action => {
   const users = db.collection("users");
   const existedUser = await users.findOne({ login: action.login });
+
   if (existedUser !== null) {
     return { error: "user exists", result: "error" };
   }
+
   const user = {
     login: action.login,
     password: await argon2.hash(action.password),
     totalScore: 0,
-    roomName: null
+    roomName: null,
+    board: Player.newBoard()
   };
   await users.insertOne(user);
   return {
@@ -78,40 +82,6 @@ module.exports.loginUser = async action => {
   return { token: generateJWT(user) };
 };
 
-module.exports.joinRoom = async action => {
-  let token = decodeJWT(action.token);
-  const rooms = db.collection("rooms");
-  let existedRoom = await rooms.findOne({ name: action.name });
-  const users = db.collection("users");
-  let currentUser = await users.findOne({ login: token.data.login });
-
-  if (existedRoom === null) {
-    return { error: "Room doesn't exists", result: "error" };
-  }
-  if (existedRoom.participants.length === 6) {
-    return { error: "Full room", result: "error" };
-  }
-  if (currentUser === null) {
-    return { error: "user doesn't exists", room: "error" };
-  }
-  if (currentUser.roomName !== null) {
-    return { error: "user has room", result: "error" };
-  }
-
-  existedRoom.participants.push(currentUser.login);
-  currentUser.roomName = action.name;
-  await users.findOneAndUpdate(
-    { login: token.data.login },
-    { $set: currentUser }
-  );
-  const resultRoom = await rooms.findOneAndUpdate(
-    { name: action.name },
-    { $set: existedRoom }
-  );
-  existedRoom = await rooms.findOne({ name: action.name });
-  return { room: existedRoom };
-};
-
 module.exports.lockRoom = async action => {
   let token = decodeJWT(action.token);
   const rooms = db.collection("rooms");
@@ -119,7 +89,7 @@ module.exports.lockRoom = async action => {
   const currentUser = await users.findOne({ login: token.data.login });
 
   if (currentUser === null) {
-    return { error: "user doesn't exists", room: "error" };
+    return { error: "user doesn't exists", result: "error" };
   }
 
   const roomName = currentUser.roomName;
@@ -138,5 +108,5 @@ module.exports.lockRoom = async action => {
   existedRoom.isStarted = true;
   await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });
   existedRoom = await rooms.findOne({ name: roomName });
-  return { room: existedRoom };
+  return { room: existedRoom, result: "ok" };
 };
