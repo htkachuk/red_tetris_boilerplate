@@ -3,6 +3,8 @@ import debug from "debug";
 import * as databaseInstance from "./db";
 import * as eventTypes from "./eventTypes";
 import Player from "./models/Player";
+import { Piece } from "./models/Piece";
+import { Board } from "./models/Board";
 
 const logerror = debug("tetris:error"),
   loginfo = debug("tetris:info");
@@ -31,62 +33,74 @@ const initApp = (app, params, cb) => {
   });
 };
 
-const initEngine = io => {
+const initEngine = async io => {
   io.on("connection", function(socket) {
     loginfo("Socket connected: " + socket.id);
 
-    socket.on(eventTypes.REGISTER, action => {
-      databaseInstance.createUser(action).then(result => {
-        socket.emit(eventTypes.REGISTER_RESULT, {
-          type: eventTypes.REGISTER_RESULT,
-          result
-        });
+    socket.on(eventTypes.REGISTER, async action => {
+      const result = await databaseInstance.createUser(action);
+      socket.emit(eventTypes.REGISTER_RESULT, {
+        type: eventTypes.REGISTER_RESULT,
+        result
       });
     });
 
-    socket.on(eventTypes.LOGIN, action => {
-      databaseInstance.loginUser(action).then(result => {
-        socket.emit(eventTypes.LOGIN_RESULT, {
-          type: eventTypes.LOGIN_RESULT,
-          result
-        });
+    socket.on(eventTypes.LOGIN, async action => {
+      const result = await databaseInstance.loginUser(action);
+      socket.emit(eventTypes.LOGIN_RESULT, {
+        type: eventTypes.LOGIN_RESULT,
+        result
       });
     });
 
-    socket.on(eventTypes.CREATE_ROOM, action => {
-      databaseInstance.createRoom(action).then(result => {
+    socket.on(eventTypes.CREATE_ROOM, async action => {
+      const result = await databaseInstance.createRoom(action);
+      if (result === "ok") {
         socket.join(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.CREATE_ROOM_RESULT, {
           type: eventTypes.CREATE_ROOM_RESULT,
           result
         });
-      });
-    });
-
-    socket.on(eventTypes.JOIN_ROOM, action => {
-      Player.joinRoom(action).then(result => {
-        socket.join(result.room.name);
-        io.sockets.in(result.room.name).emit(eventTypes.JOIN_ROOM_RESULT, {
-          type: eventTypes.JOIN_ROOM_RESULT,
+      } else
+        io.sockets.in(result.room.name).emit(eventTypes.CREATE_ROOM_RESULT, {
+          type: eventTypes.CREATE_ROOM_RESULT,
           result
         });
+    });
+
+    socket.on(eventTypes.JOIN_ROOM, async action => {
+      const result = Player.joinRoom(action);
+      socket.join(result.room.name);
+      io.sockets.in(result.room.name).emit(eventTypes.JOIN_ROOM_RESULT, {
+        type: eventTypes.JOIN_ROOM_RESULT,
+        result
       });
     });
 
-    socket.on(eventTypes.LOCK_ROOM, action => {
-      databaseInstance.lockRoom(action).then(result => {
-        console.log(result);
-        if (result.result === "ok")
-          io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
-            type: eventTypes.LOCK_ROOM_RESULT,
-            result
-          });
-        else
-          socket.emit(eventTypes.LOCK_ROOM_RESULT, {
-            type: eventTypes.LOCK_ROOM_RESULT,
-            result
-          });
-      });
+    socket.on(eventTypes.LOCK_ROOM, async action => {
+      const result = await databaseInstance.lockRoom(action);
+      console.log(result);
+      if (result.result === "ok") {
+        io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
+          type: eventTypes.LOCK_ROOM_RESULT,
+          result
+        });
+
+        console.log(typeof Piece);
+        const newPiece = new Piece();
+        const boardObj = new Board();
+
+        // const newPiece = pieceObj.getRandomPiece();
+        const playersBoard = await databaseInstance.getUsersBoard(result.room);
+
+        setInterval(function() {
+          console.log(boardObj.moveBottom(playersBoard[0], newPiece));
+        }, 5000);
+      } else
+        socket.emit(eventTypes.LOCK_ROOM_RESULT, {
+          type: eventTypes.LOCK_ROOM_RESULT,
+          result
+        });
     });
 
     socket.on(eventTypes.MOVE_UNIT, action => {

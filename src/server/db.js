@@ -10,6 +10,15 @@ export let db;
 
 client.connect().then(client => {
   db = client.db(dbName);
+
+  // db.dropDatabase(function(err, result) {
+  //   console.log("Error : " + err);
+  //   if (err) throw err;
+  //   console.log("Operation Success ? " + result);
+
+  //   // after all the operations with db, close it.
+  //   db.close();
+  // });
 });
 
 module.exports.createUser = async action => {
@@ -46,9 +55,10 @@ module.exports.createRoom = async action => {
   if (currentUser === null) {
     return { error: "user doesn't exists", result: "error" };
   }
-  if (currentUser.roomName !== null) {
-    return { error: "user has room", result: "error" };
-  }
+
+  // if (currentUser.roomName !== null) {
+  //   return { error: "user has room", result: "error" };
+  // }
 
   const room = {
     name: action.name,
@@ -63,7 +73,7 @@ module.exports.createRoom = async action => {
     { $set: currentUser }
   );
   existedRoom = await rooms.findOne({ name: action.name });
-  return { room: existedRoom };
+  return { room: existedRoom, result: "ok" };
 };
 
 module.exports.loginUser = async action => {
@@ -83,11 +93,13 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.lockRoom = async action => {
-  let token = decodeJWT(action.token);
+  console.log("hello1");
+  let token = await decodeJWT(action.token);
+  console.log("token = ", token);
   const rooms = db.collection("rooms");
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
-
+  console.log("hello");
   if (currentUser === null) {
     return { error: "user doesn't exists", result: "error" };
   }
@@ -109,4 +121,16 @@ module.exports.lockRoom = async action => {
   await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });
   existedRoom = await rooms.findOne({ name: roomName });
   return { room: existedRoom, result: "ok" };
+};
+
+module.exports.getUsersBoard = async roomName => {
+  const room = await rooms.findOne({ name: roomName });
+
+  boards = [];
+
+  for (let index in room.participants) {
+    let currentUser = await users.findOne({ login: room.participants[index] });
+    boards.push(currentUser.board);
+  }
+  return boards;
 };

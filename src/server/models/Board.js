@@ -3,6 +3,7 @@ import GREY from "../constants/colors";
 import columnsCount from "../constants/board";
 
 class Board {
+  constructor() {}
   checkBoard(pieceX, pieceY, piece, newBoard, color) {
     for (let y in piece) {
       for (let x in piece[y]) {
