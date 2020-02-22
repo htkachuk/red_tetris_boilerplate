@@ -93,4 +93,4 @@ const T = [
   ]
 ];
 
-export const pieces = [T, O, I, Z, S, L, J];
+module.exports.pieces = [T, O, I, Z, S, L, J];
