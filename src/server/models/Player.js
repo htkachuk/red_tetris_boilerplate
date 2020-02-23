@@ -1,8 +1,16 @@
 import { rowsCount, columnsCount } from "../constants/board";
 import { decodeJWT } from "../auth";
 import { db } from "../db";
+import Piece from "./Piece";
 
 class Player {
+  constructor() {
+    this.board = this.newBoard;
+    this.rowsCount = rowsCount;
+
+    // this.piecesArray = new Piece[3]();
+  }
+
   static newBoard() {
     let board = [];
 
