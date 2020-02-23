@@ -42,7 +42,7 @@ class Board {
 
     if (piece.y + piece.piece[0].length > rowsCount) {
       piece.y -= 1;
-      return { board, neadNewPiece: true, gameOver: false };
+      return { boardCopy, neadNewPiece: true, gameOver: false };
     }
 
     let newBoard = this.removeOldPiece(
@@ -61,6 +61,8 @@ class Board {
     );
     if (newPositionBoard === false) {
       piece.y -= 1;
+      if (piece.y === -1)
+        return { board, piece, neadNewPiece: true, gameOver: true };
       return { board, piece, neadNewPiece: true, gameOver: false };
     }
     return {

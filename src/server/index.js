@@ -94,10 +94,10 @@ const initEngine = async io => {
           let board = JSON.parse(JSON.stringify(playersBoard[0]));
           let moveResult = boardObj.moveBottom(board, newPieces[0], 20);
 
-          // if (moveResult.gameOver === true) {
-          //   console.log("GAME OVER");
-          //   clearInterval(idInterval);
-          // }
+          if (moveResult.gameOver === true) {
+            console.log("GAME OVER");
+            clearInterval(idInterval);
+          }
 
           if (moveResult.neadNewPiece === false)
             playersBoard[0] = moveResult.board;
