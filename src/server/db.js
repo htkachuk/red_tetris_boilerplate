@@ -93,13 +93,11 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.lockRoom = async action => {
-  console.log("hello1");
   let token = await decodeJWT(action.token);
-  console.log("token = ", token);
   const rooms = db.collection("rooms");
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
-  console.log("hello");
+
   if (currentUser === null) {
     return { error: "user doesn't exists", result: "error" };
   }
@@ -113,9 +111,10 @@ module.exports.lockRoom = async action => {
   if (existedRoom.leader !== currentUser.login) {
     return { error: "permission denied", result: "error" };
   }
-  if (existedRoom.isStarted === true) {
-    return { error: "game have been started", result: "error" };
-  }
+
+  // if (existedRoom.isStarted === true) {
+  //   return { error: "game have been started", result: "error" };
+  // }
 
   existedRoom.isStarted = true;
   await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });
@@ -123,10 +122,9 @@ module.exports.lockRoom = async action => {
   return { room: existedRoom, result: "ok" };
 };
 
-module.exports.getUsersBoard = async roomName => {
-  const room = await rooms.findOne({ name: roomName });
-
-  boards = [];
+module.exports.getUsersBoard = async room => {
+  const users = db.collection("users");
+  let boards = [];
 
   for (let index in room.participants) {
     let currentUser = await users.findOne({ login: room.participants[index] });
