@@ -10,15 +10,6 @@ export let db;
 
 client.connect().then(client => {
   db = client.db(dbName);
-
-  // db.dropDatabase(function(err, result) {
-  //   console.log("Error : " + err);
-  //   if (err) throw err;
-  //   console.log("Operation Success ? " + result);
-
-  //   // after all the operations with db, close it.
-  //   db.close();
-  // });
 });
 
 module.exports.createUser = async action => {
