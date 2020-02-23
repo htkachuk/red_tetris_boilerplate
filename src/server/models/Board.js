@@ -4,42 +4,71 @@ import columnsCount from "../constants/board";
 
 class Board {
   constructor() {}
-  checkBoard(pieceX, pieceY, piece, newBoard, color) {
+
+  checkBoard(pieceX, pieceY, piece, board, color) {
     for (let y in piece) {
       for (let x in piece[y]) {
         if (piece[y][x] === 1) {
-          if (newBoard[pieceY + y][pieceX + x] != 0) {
+          if (board[pieceY + parseInt(y, 10)][pieceX + parseInt(x, 10)] !== 0) {
             return false;
           } else {
-            newBoard[pieceY + y][pieceX + x] = color;
+            board[pieceY + parseInt(y, 10)][pieceX + parseInt(x, 10)] = color;
           }
         }
       }
     }
-    return newBoard;
+    return board;
   }
 
-  moveBottom(board, piece) {
+  removeOldPiece(board, pieceX, pieceY, piece) {
+    if (pieceX < 0 || pieceY < 0) {
+      return board;
+    }
+    for (let y in piece) {
+      for (let x in piece[y]) {
+        if (piece[y][x] === 1) {
+          board[pieceY + parseInt(y, 10)][pieceX + parseInt(x, 10)] = 0;
+        }
+      }
+    }
+    return board;
+  }
+
+  moveBottom(board, piece, rowsCount) {
+    console.log("Board come:\n", board);
     piece.y += 1;
 
-    if (piece.y > board.length) {
+    const boardCopy = JSON.parse(JSON.stringify(board));
+
+    if (piece.y + piece.piece[0].length > rowsCount) {
       piece.y -= 1;
-      return { board, piece, neadNewPiece: true };
+      return { board, neadNewPiece: true, gameOver: false };
     }
 
-    let newBoard = this.checkBoard(
+    let newBoard = this.removeOldPiece(
+      boardCopy,
+      piece.x,
+      piece.y - 1,
+      piece.piece[0]
+    );
+
+    let newPositionBoard = this.checkBoard(
       piece.x,
       piece.y,
       piece.piece[0],
-      board,
+      newBoard,
       piece.color
     );
-    if (newBoard === false) {
+    if (newPositionBoard === false) {
       piece.y -= 1;
-      return { board, piece, neadNewPiece: true };
+      return { board, piece, neadNewPiece: true, gameOver: false };
     }
-
-    return { board: newBoard, piece, neadNewPiece: false };
+    return {
+      board: newPositionBoard,
+      piece,
+      neadNewPiece: false,
+      gameOver: false
+    };
   }
 
   moveLeft(board, piece) {
@@ -54,10 +83,9 @@ class Board {
       piece.color
     );
     if (newBoard === false) {
-      return { board, piece, neadNewPiece: true };
+      return board;
     }
-
-    return { board: newBoard, piece: newPice, neadNewPiece: false };
+    return newBoard;
   }
 
   moveRight(board, piece) {
@@ -72,10 +100,10 @@ class Board {
       piece.color
     );
     if (newBoard === false) {
-      return { board, piece, neadNewPiece: true };
+      return board;
     }
 
-    return { board: newBoard, piece: newPice, neadNewPiece: false };
+    return newBoard;
   }
 
   addLine(board) {
@@ -86,10 +114,24 @@ class Board {
     return board;
   }
 
-  removeLine(board, x) {
+  removeLine(board, y) {
     let newRow = [];
     for (let i = 0; i < columnsCount; i++) newRow.push(0);
-    board[x] = newRow;
+    board[y] = newRow;
+    return board;
+  }
+
+  checkFullLine(board) {
+    for (let y in board) {
+      let fullLine = true;
+      for (let x in board[y]) {
+        if (board[y][x] === 0) {
+          fullLine = false;
+          break;
+        }
+        if (fullLine === true) board = this.removeLine(board, y);
+      }
+    }
     return board;
   }
 }
