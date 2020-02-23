@@ -3,11 +3,11 @@ import pieces from "../constants/pieces";
 
 class Piece {
   constructor() {
-    const index = Math.floor(Math.random() * Math.floor(pieces.length));
-    this.color = colors[index];
+    const index = Math.floor(Math.random() * Math.floor(pieces.pieces.length));
+    this.color = colors.colors[index];
     this.x = 3;
     this.y = -1;
-    this.piece = pieces[index];
+    this.piece = pieces.pieces[index];
     this.index = index;
   }
 
@@ -19,19 +19,6 @@ class Piece {
     let oldPiece = this.piece;
     return this.piece.unshift(oldPiece.splice(2, 1));
   }
-
-  // getRandomPiece() {
-  //   const index = Math.floor(Math.random() * Math.floor(pieces.length));
-
-  //   const Piece = {
-  //     color: colors[index],
-  //     x: 3,
-  //     y: -1,
-  //     piece: pieces[index],
-  //     index
-  //   };
-  //   return Piece;
-  // }
 }
 
 export default Piece;
