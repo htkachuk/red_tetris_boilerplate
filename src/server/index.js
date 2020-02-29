@@ -40,6 +40,7 @@ const initEngine = async io => {
     loginfo("Socket connected: " + socket.id);
 
     socket.on(eventTypes.REGISTER, async action => {
+      action.socketId = socket.id;
       const result = await databaseInstance.createUser(action);
       socket.emit(eventTypes.REGISTER_RESULT, {
         type: eventTypes.REGISTER_RESULT,
@@ -86,15 +87,20 @@ const initEngine = async io => {
           type: eventTypes.LOCK_ROOM_RESULT,
           result
         });
+
         const newPieces = [new Piece(), new Piece(), new Piece()];
         const boardObj = new Board();
         const playersBoard = await databaseInstance.getUsersBoard(result.room);
+        const playersId = await databaseInstance.getPlayersId(result.room);
 
         idInterval = setInterval(function() {
           let board = JSON.parse(JSON.stringify(playersBoard[0]));
           let moveResult = boardObj.moveBottom(board, newPieces[0], 20);
 
           if (moveResult.gameOver === true) {
+            io.sockets.in(result.room.name).emit(eventTypes.END_GAME, {
+              type: eventTypes.END_GAME
+            });
             console.log("GAME OVER");
             clearInterval(idInterval);
           }
@@ -104,29 +110,30 @@ const initEngine = async io => {
           else {
             newPieces.splice(0, 1);
             newPieces.push(new Piece());
+            socket.broadcast.to(playersId[0]).emit(eventTypes.UPDATE_STATE, {
+              type: eventTypes.UPDATE_STATE,
+              board: playersBoard[0]
+            });
           }
         }, 500);
       } else
-        socket.emit(eventTypes.LOsCK_ROOM_RESULT, {
+        socket.emit(eventTypes.LOCK_ROOM_RESULT, {
           type: eventTypes.LOCK_ROOM_RESULT,
           result
         });
     });
 
-    socket.on(eventTypes.MOVE_UNIT, action => {
-      // TODO: login
-      socket.emit(eventTypes.UPDATE_STATE, { type: "pong" });
+    socket.on(eventTypes.MOVE_UNIT_LEFT, action => {
+      socket.emit(eventTypes.UPDATE_STATE, {
+        type: eventTypes.UPDATE_STATE,
+        board
+      });
     });
-
-    socket.on(eventTypes.REQUEST_STATS, action => {
-      // TODO: register
-      socket.emit(eventTypes.UPDATE_STATS, { type: "pong" });
-    });
-
-    socket.on(eventTypes.END_GAME, action => {
-      // TODO: login
-      socket.emit(eventTypes.UPDATE_STATE, { type: "pong" });
-      socket.emit(eventTypes.UPDATE_STATS, { type: "pong" });
+    socket.on(eventTypes.MOVE_UNIT_RIGHT, action => {
+      socket.emit(eventTypes.UPDATE_STATE, {
+        type: eventTypes.UPDATE_STATE,
+        board
+      });
     });
   });
 };
