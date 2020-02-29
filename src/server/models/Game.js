@@ -3,30 +3,26 @@ import colors from "../constants/colors";
 import Piece from "./Piece";
 
 class Game {
-  constructor(mode, players) {
-    this.mode = mode;
-    this.players = players;
-    this.endGame = false;
-    this.startGame = false;
-    this.speed = 0;
+  constructor() {
+    this.playersSocketId;
+    this.playersBoard;
   }
 
-  getPiece() {
-    const index = Math.floor(Math.random() * Math.floor(pieces.length));
-    return Piece(pieces[index], colors[index]);
+  async initGame(room) {
+    for (let i = 3; i > 0; i--) {
+      setTimeout(
+        io.sockets.in(room.name).emit(eventTypes.INIT_GAME, {
+          type: eventTypes.INIT_GAME,
+          timeLeft: i
+        }),
+        1000
+      );
+    }
   }
 
-  addSpeed() {
-    this.speed += 10;
-  }
+  startGame() {}
 
-  startGame() {
-    this.startGame = true;
-  }
-
-  endGame() {
-    this.endGame = true;
-  }
+  endGame() {}
 }
 
 export default Game;
