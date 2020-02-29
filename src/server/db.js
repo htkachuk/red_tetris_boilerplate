@@ -21,6 +21,7 @@ module.exports.createUser = async action => {
   }
 
   const user = {
+    socketId: action.socketId,
     login: action.login,
     password: await argon2.hash(action.password),
     totalScore: 0,
@@ -84,10 +85,13 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.lockRoom = async action => {
+  console.log("action is\n", action);
   let token = await decodeJWT(action.token);
   const rooms = db.collection("rooms");
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
+
+  console.log(currentUser);
 
   if (currentUser === null) {
     return { error: "user doesn't exists", result: "error" };
@@ -111,6 +115,17 @@ module.exports.lockRoom = async action => {
   await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });
   existedRoom = await rooms.findOne({ name: roomName });
   return { room: existedRoom, result: "ok" };
+};
+
+module.exports.getPlayersId = async room => {
+  const users = db.collection("users");
+  let ids = [];
+
+  for (let index in room.participants) {
+    let currentUser = await users.findOne({ login: room.participants[index] });
+    ids.push(currentUser.socketId);
+  }
+  return ids;
 };
 
 module.exports.getUsersBoard = async room => {
