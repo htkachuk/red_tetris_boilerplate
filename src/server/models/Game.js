@@ -43,6 +43,15 @@ class Game {
     // }
   }
 
+  checkHowManyPlayersInGame() {
+    let activePlayers = 0;
+
+    for (let index in this.room.participants) {
+      if (this.room.participants[index].inGame === true) activePlayers += 1;
+    }
+    return activePlayers;
+  }
+
   async startGame() {
     this.idInterval = setIntervalAsync(async () => {
       this.room = databaseInstance.getRoomByName(this.roomName);
@@ -66,10 +75,12 @@ class Game {
           this.room.participants[index].shapes.splice(0, 1);
         }
       }
-      io.sockets.in(room.name).emit(eventTypes.UPDATE_STATS, {
-        type: eventTypes.UPDATE_STATS,
-        room: this.room
-      });
+      if (this.checkHowManyPlayersInGame > 1)
+        io.sockets.in(room.name).emit(eventTypes.UPDATE_STATS, {
+          type: eventTypes.UPDATE_STATS,
+          room: this.room
+        });
+      else this.endGame();
       databaseInstance.storeUpdatedRoom(this.room);
     }, 500);
   }
