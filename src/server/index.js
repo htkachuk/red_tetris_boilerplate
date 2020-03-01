@@ -110,8 +110,8 @@ const initEngine = async io => {
           else {
             newPieces.splice(0, 1);
             newPieces.push(new Piece());
-            socket.broadcast.to(playersId[0]).emit(eventTypes.UPDATE_STATE, {
-              type: eventTypes.UPDATE_STATE,
+            socket.broadcast.to(playersId[0]).emit(eventTypes.UPDATE_STATS, {
+              type: eventTypes.UPDATE_STATS,
               board: playersBoard[0]
             });
           }
