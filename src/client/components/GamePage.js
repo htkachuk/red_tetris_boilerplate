@@ -61,7 +61,7 @@ class GamePage extends React.Component {
                     {this.props.room.participants ? (
                       this.props.room.participants.map((player, index) => (
                         <Row>
-                          <Col key={index}>{player}</Col>
+                          <Col key={index}>{player.login}</Col>
                         </Row>
                       ))
                     ) : (
