@@ -35,7 +35,7 @@ class Board {
   }
 
   moveBottom(board, piece, rowsCount) {
-    console.log("Board come:\n", board);
+    // console.log("Board come:\n", board);
     piece.y += 1;
 
     const boardCopy = JSON.parse(JSON.stringify(board));

@@ -5,8 +5,10 @@ import * as eventTypes from "./eventTypes";
 import Player from "./models/Player";
 import Piece from "./models/Piece";
 import Board from "./models/Board";
+import Game from "./models/Game";
 
 let idInterval;
+export const io;
 
 const logerror = debug("tetris:error"),
   loginfo = debug("tetris:info");
@@ -58,7 +60,8 @@ const initEngine = async io => {
 
     socket.on(eventTypes.CREATE_ROOM, async action => {
       const result = await databaseInstance.createRoom(action);
-      if (result === "ok") {
+      console.log(result);
+      if (result.result === "ok") {
         socket.join(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.CREATE_ROOM_RESULT, {
           type: eventTypes.CREATE_ROOM_RESULT,
@@ -83,39 +86,42 @@ const initEngine = async io => {
     socket.on(eventTypes.LOCK_ROOM, async action => {
       const result = await databaseInstance.lockRoom(action);
       if (result.result === "ok") {
+        console.log(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
           type: eventTypes.LOCK_ROOM_RESULT,
           result
         });
+        let gameObj = new Game();
 
-        const newPieces = [new Piece(), new Piece(), new Piece()];
-        const boardObj = new Board();
-        const playersBoard = await databaseInstance.getUsersBoard(result.room);
-        const playersId = await databaseInstance.getPlayersId(result.room);
+        gameObj.initGame(result.room);
+        // const newPieces = [new Piece(), new Piece(), new Piece()];
+        // const boardObj = new Board();
+        // const playersBoard = await databaseInstance.getUsersBoard(result.room);
+        // const playersId = await databaseInstance.getPlayersId(result.room);
 
-        idInterval = setInterval(function() {
-          let board = JSON.parse(JSON.stringify(playersBoard[0]));
-          let moveResult = boardObj.moveBottom(board, newPieces[0], 20);
+        // idInterval = setInterval(function() {
+        //   let board = JSON.parse(JSON.stringify(playersBoard[0]));
+        //   let moveResult = boardObj.moveBottom(board, newPieces[0], 20);
 
-          if (moveResult.gameOver === true) {
-            io.sockets.in(result.room.name).emit(eventTypes.END_GAME, {
-              type: eventTypes.END_GAME
-            });
-            console.log("GAME OVER");
-            clearInterval(idInterval);
-          }
+        //   if (moveResult.gameOver === true) {
+        //     io.sockets.in(result.room.name).emit(eventTypes.END_GAME, {
+        //       type: eventTypes.END_GAME
+        //     });
+        //     console.log("GAME OVER");
+        //     clearInterval(idInterval);
+        //   }
 
-          if (moveResult.neadNewPiece === false)
-            playersBoard[0] = moveResult.board;
-          else {
-            newPieces.splice(0, 1);
-            newPieces.push(new Piece());
-            socket.broadcast.to(playersId[0]).emit(eventTypes.UPDATE_STATS, {
-              type: eventTypes.UPDATE_STATS,
-              board: playersBoard[0]
-            });
-          }
-        }, 500);
+        //   if (moveResult.neadNewPiece === false)
+        //     playersBoard[0] = moveResult.board;
+        //   else {
+        //     newPieces.splice(0, 1);
+        //     newPieces.push(new Piece());
+        //     io.sockets.in(result.room.name).emit(eventTypes.UPDATE_STATS, {
+        //       type: eventTypes.UPDATE_STATS,
+        //       board: playersBoard[0]
+        //     });
+        //   }
+        // }, 500);
       } else
         socket.emit(eventTypes.LOCK_ROOM_RESULT, {
           type: eventTypes.LOCK_ROOM_RESULT,
@@ -144,7 +150,7 @@ export function create(params) {
       res.writeHead(200, { "Content-Type": "text/html" });
     });
     initApp(app, params, () => {
-      const io = require("socket.io")(app);
+      io = require("socket.io")(app);
       const stop = cb => {
         io.close();
         app.close(() => {
