@@ -44,7 +44,12 @@ class Player {
       return { error: "user has room", result: "error" };
     }
 
-    existedRoom.participants.push(currentUser.login);
+    existedRoom.participants.push({
+      login: currentUser.login,
+      shapes: [],
+      board: this.newBoard(),
+      inGame: true
+    });
     currentUser.roomName = action.name;
     await users.findOneAndUpdate(
       { login: token.data.login },

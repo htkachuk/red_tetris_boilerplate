@@ -8,7 +8,7 @@ import Board from "./models/Board";
 import Game from "./models/Game";
 
 let idInterval;
-export const io;
+export let io;
 
 const logerror = debug("tetris:error"),
   loginfo = debug("tetris:info");
@@ -93,11 +93,8 @@ const initEngine = async io => {
         });
         let gameObj = new Game();
 
-        gameObj.initGame(result.room);
-        // const newPieces = [new Piece(), new Piece(), new Piece()];
-        // const boardObj = new Board();
-        // const playersBoard = await databaseInstance.getUsersBoard(result.room);
-        // const playersId = await databaseInstance.getPlayersId(result.room);
+        gameObj.initGame(result.room.name);
+        gameObj.startGame();
 
         // idInterval = setInterval(function() {
         //   let board = JSON.parse(JSON.stringify(playersBoard[0]));

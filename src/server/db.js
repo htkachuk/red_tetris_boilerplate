@@ -25,8 +25,7 @@ module.exports.createUser = async action => {
     login: action.login,
     password: await argon2.hash(action.password),
     totalScore: 0,
-    roomName: null,
-    board: Player.newBoard()
+    roomName: null
   };
   await users.insertOne(user);
   return {
@@ -54,7 +53,14 @@ module.exports.createRoom = async action => {
 
   const room = {
     name: action.name,
-    participants: [currentUser.login],
+    participants: [
+      {
+        login: currentUser.login,
+        shapes: [],
+        board: Player.newBoard(),
+        inGame: true
+      }
+    ],
     leader: currentUser.login,
     isStarted: false
   };
@@ -85,20 +91,15 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.lockRoom = async action => {
-  console.log("action is\n", action);
   let token = await decodeJWT(action.token);
   const rooms = db.collection("rooms");
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
-
-  console.log(currentUser);
+  let existedRoom = await rooms.findOne({ name: roomName });
 
   if (currentUser === null) {
     return { error: "user doesn't exists", result: "error" };
   }
-
-  const roomName = currentUser.roomName;
-  let existedRoom = await rooms.findOne({ name: roomName });
 
   if (existedRoom === null) {
     return { error: "Room doesn't exists", result: "error" };
@@ -111,30 +112,50 @@ module.exports.lockRoom = async action => {
   //   return { error: "game have been started", result: "error" };
   // }
 
+  const roomName = currentUser.roomName;
+
   existedRoom.isStarted = true;
   await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });
   existedRoom = await rooms.findOne({ name: roomName });
   return { room: existedRoom, result: "ok" };
 };
 
-module.exports.getPlayersId = async room => {
-  const users = db.collection("users");
-  let ids = [];
-
-  for (let index in room.participants) {
-    let currentUser = await users.findOne({ login: room.participants[index] });
-    ids.push(currentUser.socketId);
-  }
-  return ids;
+module.exports.getRoomByName = async roomName => {
+  const rooms = db.collection("rooms");
+  const existedRoom = await rooms.findOne({ name: roomName });
+  return existedRoom;
 };
 
-module.exports.getUsersBoard = async room => {
-  const users = db.collection("users");
-  let boards = [];
-
-  for (let index in room.participants) {
-    let currentUser = await users.findOne({ login: room.participants[index] });
-    boards.push(currentUser.board);
-  }
-  return boards;
+module.exports.storeUpdatedRoom = async room => {
+  const rooms = db.collection("rooms");
+  await rooms.findOneAndUpdate({ name: room.name }, { $set: room });
 };
+
+// module.exports.getPlayersLogins = async room => {
+//   const users = db.collection("users");
+//   let logins = [];
+
+//   for (let index in room.participants) {
+//     let currentUser = await users.findOne({ login: room.participants[index] });
+//     logins.push(currentUser.login);
+//   }
+//   return logins;
+// };
+
+// module.exports.getPlayersBoard = async room => {
+//   const users = db.collection("users");
+//   let boards = [];
+
+//   for (let index in room.participants) {
+//     let currentUser = await users.findOne({ login: room.participants[index] });
+//     boards.push(currentUser.board);
+//   }
+//   return boards;
+// };
+
+// module.exports.storePlayerUpdate = async (login, board) => {
+//   const users = db.collection("users");
+//   let currentUser = await users.findOne({ login });
+//   currentUser.board = board;
+//   await users.findOneAndUpdate({ login }, { $set: currentUser });
+// };
