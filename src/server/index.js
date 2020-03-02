@@ -3,12 +3,12 @@ import debug from "debug";
 import * as databaseInstance from "./db";
 import * as eventTypes from "./eventTypes";
 import Player from "./models/Player";
-import Piece from "./models/Piece";
 import Board from "./models/Board";
 import Game from "./models/Game";
 
 let idInterval;
 export let io;
+const boardObj = new Board();
 
 const logerror = debug("tetris:error"),
   loginfo = debug("tetris:info");
@@ -93,8 +93,7 @@ const initEngine = async io => {
         });
         let gameObj = new Game(result.room.name);
 
-        gameObj.initGame();
-
+        await gameObj.initGame();
         gameObj.startGame();
       } else
         socket.emit(eventTypes.LOCK_ROOM_RESULT, {
@@ -104,16 +103,23 @@ const initEngine = async io => {
     });
 
     socket.on(eventTypes.MOVE_UNIT_LEFT, action => {
-      socket.emit(eventTypes.UPDATE_STATE, {
-        type: eventTypes.UPDATE_STATE,
-        board
-      });
+      const gameObj = new Game(action.roomName);
+      gameObj.movePiece(action.playerLogin, boardObj.moveLeft);
     });
+
     socket.on(eventTypes.MOVE_UNIT_RIGHT, action => {
-      socket.emit(eventTypes.UPDATE_STATE, {
-        type: eventTypes.UPDATE_STATE,
-        board
-      });
+      const gameObj = new Game(action.roomName);
+      gameObj.movePiece(action.playerLogin, boardObj.moveRight);
+    });
+
+    socket.on(eventTypes.ROTATE_UNIT_LEFT, action => {
+      const gameObj = new Game(action.roomName);
+      gameObj.movePiece(action.playerLogin, boardObj.rotateLeft);
+    });
+
+    socket.on(eventTypes.ROTATE_UNIT_RIGHT, action => {
+      const gameObj = new Game(action.roomName);
+      gameObj.movePiece(action.playerLogin, boardObj.rotateRight);
     });
   });
 };

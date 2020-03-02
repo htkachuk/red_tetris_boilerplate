@@ -74,7 +74,7 @@ class Board {
     };
   }
 
-  moveLeft(board, piece) {
+  rotateLeft(board, piece) {
     let newPice = piece;
     newPice.piece = Piece.rotateLeft(newPice.piece);
 
@@ -91,7 +91,7 @@ class Board {
     return newBoard;
   }
 
-  moveRight(board, piece) {
+  rotateRight(board, piece) {
     let newPice = piece;
     newPice.piece = Piece.rotateRight(newPice.piece);
 

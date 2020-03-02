@@ -130,32 +130,3 @@ module.exports.storeUpdatedRoom = async room => {
   const rooms = db.collection("rooms");
   await rooms.findOneAndUpdate({ name: room.name }, { $set: room });
 };
-
-// module.exports.getPlayersLogins = async room => {
-//   const users = db.collection("users");
-//   let logins = [];
-
-//   for (let index in room.participants) {
-//     let currentUser = await users.findOne({ login: room.participants[index] });
-//     logins.push(currentUser.login);
-//   }
-//   return logins;
-// };
-
-// module.exports.getPlayersBoard = async room => {
-//   const users = db.collection("users");
-//   let boards = [];
-
-//   for (let index in room.participants) {
-//     let currentUser = await users.findOne({ login: room.participants[index] });
-//     boards.push(currentUser.board);
-//   }
-//   return boards;
-// };
-
-// module.exports.storePlayerUpdate = async (login, board) => {
-//   const users = db.collection("users");
-//   let currentUser = await users.findOne({ login });
-//   currentUser.board = board;
-//   await users.findOneAndUpdate({ login }, { $set: currentUser });
-// };

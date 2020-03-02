@@ -1,5 +1,3 @@
-// import { pieces } from "../constants/pieces";
-// import colors from "../constants/colors";
 import Piece from "./Piece";
 import Board from "./Board";
 import { io } from "../index";
@@ -90,6 +88,93 @@ class Game {
     console.log("GAME OVER");
     clearIntervalAsync(this.idInterval);
   }
+
+  async movePiece(player, movingType) {
+    this.room = await databaseInstance.getRoomByName(this.roomName);
+
+    for (let index = 0; index < this.room.participants.length; index++) {
+      if (this.room.participants[index].login === player) {
+        let board = JSON.parse(
+          JSON.stringify(this.room.participants[index].board)
+        );
+        this.room.participants[index].board = movingType(
+          board,
+          this.room.participants[index].shapes[0]
+        );
+        await databaseInstance.storeUpdatedRoom(this.room);
+        io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
+          type: eventTypes.UPDATE_STATS,
+          room: this.room
+        });
+        break;
+      }
+    }
+  }
+
+  // async rotateRight(player) {
+  //   this.room = await databaseInstance.getRoomByName(this.roomName);
+
+  //   for (let index = 0; index < this.room.participants.length; index++) {
+  //     if (this.room.participants[index].login === player) {
+  //       let board = JSON.parse(
+  //         JSON.stringify(this.room.participants[index].board)
+  //       );
+  //       this.room.participants[index].board = this.boardObj.rotateRight(
+  //         board,
+  //         this.room.participants[index].shapes[0]
+  //       );
+  //       await databaseInstance.storeUpdatedRoom(this.room);
+  //       io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
+  //         type: eventTypes.UPDATE_STATS,
+  //         room: this.room
+  //       });
+  //       break;
+  //     }
+  //   }
+  // }
+
+  // async moveLeft(player) {
+  //   this.room = await databaseInstance.getRoomByName(this.roomName);
+
+  //   for (let index = 0; index < this.room.participants.length; index++) {
+  //     if (this.room.participants[index].login === player) {
+  //       let board = JSON.parse(
+  //         JSON.stringify(this.room.participants[index].board)
+  //       );
+  //       this.room.participants[index].board = this.boardObj.moveLeft(
+  //         board,
+  //         this.room.participants[index].shapes[0]
+  //       );
+  //       await databaseInstance.storeUpdatedRoom(this.room);
+  //       io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
+  //         type: eventTypes.UPDATE_STATS,
+  //         room: this.room
+  //       });
+  //       break;
+  //     }
+  //   }
+  // }
+  // async moveRight(player) {
+  //   this.room = await databaseInstance.getRoomByName(this.roomName);
+
+  //   for (let index = 0; index < this.room.participants.length; index++) {
+  //     if (this.room.participants[index].login === player) {
+  //       let board = JSON.parse(
+  //         JSON.stringify(this.room.participants[index].board)
+  //       );
+  //       this.room.participants[index].board = this.boardObj.moveRight(
+  //         board,
+  //         this.room.participants[index].shapes[0]
+  //       );
+  //       await databaseInstance.storeUpdatedRoom(this.room);
+  //       io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
+  //         type: eventTypes.UPDATE_STATS,
+  //         room: this.room
+  //       });
+  //       break;
+  //     }
+  //   }
+  // }
 }
 
 export default Game;
