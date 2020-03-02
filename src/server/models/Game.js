@@ -12,9 +12,6 @@ import { clearIntervalAsync } from "set-interval-async";
 class Game {
   constructor(name) {
     this.idInterval;
-
-    // this.playersBoard;
-    // this.newPieces = [new Piece(), new Piece(), new Piece()];
     this.roomName = name;
     this.room;
     this.boardObj = new Board();
@@ -50,8 +47,6 @@ class Game {
     for (let index in this.room.participants) {
       if (this.room.participants[index].inGame === true) activePlayers += 1;
     }
-
-    console.log("\n\nActive Players:\n\n", activePlayers);
     return activePlayers;
   }
 

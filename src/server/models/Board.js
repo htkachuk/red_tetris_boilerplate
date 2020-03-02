@@ -60,10 +60,7 @@ class Board {
       piece.color
     );
 
-    console.log("\n\nnewPosBoard\n\n", newPositionBoard);
-
     if (newPositionBoard === false) {
-      console.log("\n\nin false! WHY\n\n");
       piece.y -= 1;
       if (piece.y === -1)
         return { board, piece, neadNewPiece: true, gameOver: true };
