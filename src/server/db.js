@@ -91,10 +91,12 @@ module.exports.loginUser = async action => {
 };
 
 module.exports.lockRoom = async action => {
+  console.log("action in lock room: ", action);
   let token = await decodeJWT(action.token);
   const rooms = db.collection("rooms");
   const users = db.collection("users");
   const currentUser = await users.findOne({ login: token.data.login });
+  const roomName = currentUser.roomName;
   let existedRoom = await rooms.findOne({ name: roomName });
 
   if (currentUser === null) {
@@ -111,8 +113,6 @@ module.exports.lockRoom = async action => {
   // if (existedRoom.isStarted === true) {
   //   return { error: "game have been started", result: "error" };
   // }
-
-  const roomName = currentUser.roomName;
 
   existedRoom.isStarted = true;
   await rooms.findOneAndUpdate({ name: roomName }, { $set: existedRoom });

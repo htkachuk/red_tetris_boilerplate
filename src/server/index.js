@@ -60,7 +60,7 @@ const initEngine = async io => {
 
     socket.on(eventTypes.CREATE_ROOM, async action => {
       const result = await databaseInstance.createRoom(action);
-      console.log(result);
+      console.log("createRoom = ", result);
       if (result.result === "ok") {
         socket.join(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.CREATE_ROOM_RESULT, {
@@ -85,15 +85,16 @@ const initEngine = async io => {
 
     socket.on(eventTypes.LOCK_ROOM, async action => {
       const result = await databaseInstance.lockRoom(action);
+      console.log("lock room: ", result);
       if (result.result === "ok") {
-        console.log(result.room.name);
         io.sockets.in(result.room.name).emit(eventTypes.LOCK_ROOM_RESULT, {
           type: eventTypes.LOCK_ROOM_RESULT,
           result
         });
-        let gameObj = new Game();
+        let gameObj = new Game(result.room.name);
 
-        gameObj.initGame(result.room.name);
+        gameObj.initGame();
+
         gameObj.startGame();
       } else
         socket.emit(eventTypes.LOCK_ROOM_RESULT, {

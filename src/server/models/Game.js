@@ -27,16 +27,17 @@ class Game {
     }
   }
 
-  getFirstShapes() {
+  async getFirstShapes() {
     let shapeArray = [new Piece(), new Piece(), new Piece()];
     for (let index in this.room.participants) {
       this.room.participants[index].shapes = shapeArray;
     }
-    databaseInstance.storeUpdatedRoom(this.room);
+    await databaseInstance.storeUpdatedRoom(this.room);
   }
 
   async initGame() {
-    this.room = databaseInstance.getRoomByName(this.roomName);
+    this.room = await databaseInstance.getRoomByName(this.roomName);
+    await this.getFirstShapes();
 
     // for (let i = 3; i > 0; i--) {
     //   DelayNode(1000);
@@ -49,12 +50,14 @@ class Game {
     for (let index in this.room.participants) {
       if (this.room.participants[index].inGame === true) activePlayers += 1;
     }
+
+    console.log("\n\nActive Players:\n\n", activePlayers);
     return activePlayers;
   }
 
   async startGame() {
     this.idInterval = setIntervalAsync(async () => {
-      this.room = databaseInstance.getRoomByName(this.roomName);
+      this.room = await databaseInstance.getRoomByName(this.roomName);
       for (let index = 0; index < this.room.participants.length; index++) {
         let board = JSON.parse(
           JSON.stringify(this.room.participants[index].board)
@@ -75,18 +78,18 @@ class Game {
           this.room.participants[index].shapes.splice(0, 1);
         }
       }
-      if (this.checkHowManyPlayersInGame > 1)
-        io.sockets.in(room.name).emit(eventTypes.UPDATE_STATS, {
+      if (this.checkHowManyPlayersInGame() > 0)
+        io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
           type: eventTypes.UPDATE_STATS,
           room: this.room
         });
       else this.endGame();
-      databaseInstance.storeUpdatedRoom(this.room);
+      await databaseInstance.storeUpdatedRoom(this.room);
     }, 500);
   }
 
   endGame() {
-    io.sockets.in(result.room.name).emit(eventTypes.END_GAME, {
+    io.sockets.in(this.room.name).emit(eventTypes.END_GAME, {
       type: eventTypes.END_GAME
     });
     console.log("GAME OVER");
