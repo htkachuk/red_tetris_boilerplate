@@ -39,6 +39,7 @@ export const socketMiddleware = store => {
 
   const handleLockRoomResult = action => {
     const actionObject = action.result.room;
+    console.log(action);
     store.dispatch(
       updateRoom(
         actionObject.name,
