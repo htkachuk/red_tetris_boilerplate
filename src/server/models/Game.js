@@ -48,9 +48,38 @@ class Game {
     return activePlayers;
   }
 
+  addLine(notAddToHim, count) {
+    for (let index = 0; index < this.room.participants.length; index++) {
+      if (this.room.participants[index].login !== notAddToHim) {
+        this.boardObj.addLine(this.room.participants[index].board, count);
+      }
+    }
+  }
+
+  async removeAndAddToOther() {
+    let smthChange = false;
+    for (let index = 0; index < this.room.participants.length; index++) {
+      const checkResult = this.boardObj.checkFullLines(
+        this.room.participants[index].board
+      );
+      if (checkResult.counter > 0) {
+        smthChange = true;
+        this.addLine(this.room.participants[index].login, checkResult.counter);
+      }
+    }
+    if (smthChange === true) {
+      io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
+        type: eventTypes.UPDATE_STATS,
+        room: this.room
+      });
+      await databaseInstance.storeUpdatedRoom(this.room);
+    }
+  }
+
   async startGame() {
     this.idInterval = setIntervalAsync(async () => {
       this.room = await databaseInstance.getRoomByName(this.roomName);
+      await this.removeAndAddToOther();
       for (let index = 0; index < this.room.participants.length; index++) {
         let board = JSON.parse(
           JSON.stringify(this.room.participants[index].board)

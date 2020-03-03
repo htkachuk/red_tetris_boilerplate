@@ -109,11 +109,13 @@ class Board {
     return newBoard;
   }
 
-  addLine(board) {
+  addLine(board, count) {
     let newRow = [];
     for (let i = 0; i < columnsCount; i++) newRow.push(GREY);
-    board.pop();
-    board.push(newRow);
+    for (let i = 0; i < count; i++) {
+      board.pop();
+      board.push(newRow);
+    }
     return board;
   }
 
@@ -124,7 +126,9 @@ class Board {
     return board;
   }
 
-  checkFullLine(board) {
+  checkFullLines(board) {
+    let counter = 0;
+
     for (let y in board) {
       let fullLine = true;
       for (let x in board[y]) {
@@ -132,10 +136,13 @@ class Board {
           fullLine = false;
           break;
         }
-        if (fullLine === true) board = this.removeLine(board, y);
+        if (fullLine === true) {
+          board = this.removeLine(board, y);
+          counter += 1;
+        }
       }
     }
-    return board;
+    return board, counter;
   }
 }
 
