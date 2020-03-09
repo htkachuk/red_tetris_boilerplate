@@ -23,7 +23,7 @@ class Board {
   removeOldPiece(board, pieceX, pieceY, piece) {
     if (pieceX < 0 || pieceY < 0) {
       return board;
-    }
+    } 
     for (let y in piece) {
       for (let x in piece[y]) {
         if (piece[y][x] === 1) {
@@ -35,7 +35,7 @@ class Board {
   }
 
   moveBottom(board, piece, rowsCount) {
-    console.log("Board come:\n\n", board);
+    // console.log("Board come:\n\n", board);
     piece.y += 1;
 
     const boardCopy = JSON.parse(JSON.stringify(board));
@@ -75,38 +75,38 @@ class Board {
   }
 
   rotateLeft(board, piece) {
-    let newPice = piece;
-    newPice.piece = Piece.rotateLeft(newPice.piece);
+    let newPice =  JSON.parse(JSON.stringify(piece));
+    newPice.rotateLeft();
 
     let newBoard = this.checkBoard(
-      piece.x,
-      piece.y,
+      newPice.x,
+      newPice.y,
       newPice.piece[0],
-      board,
-      piece.color
+      JSON.parse(JSON.stringify(board)),
+      newPice.color
     );
     if (newBoard === false) {
-      return board;
+      return board, piece;
     }
-    return newBoard;
+    return newBoard, newPice;
   }
 
   rotateRight(board, piece) {
-    let newPice = piece;
-    newPice.piece = Piece.rotateRight(newPice.piece);
+    let newPice =  JSON.parse(JSON.stringify(piece));
+    newPice.rotateRight();
 
     let newBoard = this.checkBoard(
-      piece.x,
-      piece.y,
+      newPice.x,
+      newPice.y,
       newPice.piece[0],
-      board,
-      piece.color
+      JSON.parse(JSON.stringify(board)),
+      newPice.color
     );
     if (newBoard === false) {
-      return board;
+      return board, piece;
     }
 
-    return newBoard;
+    return newBoard, newPice;
   }
 
   addLine(board, count) {

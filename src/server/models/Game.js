@@ -123,13 +123,15 @@ class Game {
 
     for (let index = 0; index < this.room.participants.length; index++) {
       if (this.room.participants[index].login === player) {
-        let board = JSON.parse(
-          JSON.stringify(this.room.participants[index].board)
+        const result = movingType(
+          JSON.parse(
+            JSON.stringify(this.room.participants[index].board)
+          ),
+          JSON.parse(
+            JSON.stringify(this.room.participants[index].shapes[0]))
         );
-        this.room.participants[index].board = movingType(
-          board,
-          this.room.participants[index].shapes[0]
-        );
+        this.room.participants[index].board  = result.board;
+        this.room.participants[index].shapes[0] = result.piece;
         await databaseInstance.storeUpdatedRoom(this.room);
         io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
           type: eventTypes.UPDATE_STATS,

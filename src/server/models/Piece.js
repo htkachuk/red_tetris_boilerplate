@@ -2,8 +2,11 @@ import colors from "../constants/colors";
 import pieces from "../constants/pieces";
 
 class Piece {
-  constructor() {
-    const index = Math.floor(Math.random() * Math.floor(pieces.pieces.length));
+  constructor(mockIndex = -1) {
+    let index;
+    if (mockIndex === -1)
+      index = Math.floor(Math.random() * Math.floor(pieces.pieces.length));
+    index = mockIndex;
     this.color = colors.colors[index];
     this.x = 3;
     this.y = -1;
@@ -12,12 +15,12 @@ class Piece {
   }
 
   rotateLeft() {
-    return this.piece.push(this.piece.shift());
+    this.piece.push(this.piece.shift());
   }
 
   rotateRight() {
-    let oldPiece = this.piece;
-    return this.piece.unshift(oldPiece.splice(2, 1));
+    let lastPos = this.piece.splice(-1, 1);
+    this.piece.unshift(lastPos[0]);
   }
 }
 
