@@ -7,8 +7,6 @@ class Player {
   constructor() {
     this.board = this.newBoard;
     this.rowsCount = rowsCount;
-
-    // this.piecesArray = new Piece[3]();
   }
 
   static newBoard() {
