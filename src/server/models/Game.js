@@ -130,9 +130,11 @@ class Game {
           JSON.parse(
             JSON.stringify(this.room.participants[index].shapes[0]))
         );
-        this.room.participants[index].board  = result.board;
-        this.room.participants[index].shapes[0] = result.piece;
-        await databaseInstance.storeUpdatedRoom(this.room);
+        if (result.result === "ok") {
+          this.room.participants[index].board  = result.board;
+          this.room.participants[index].shapes[0] = result.piece;
+          await databaseInstance.storeUpdatedRoom(this.room);
+        }
         io.sockets.in(this.room.name).emit(eventTypes.UPDATE_STATS, {
           type: eventTypes.UPDATE_STATS,
           room: this.room

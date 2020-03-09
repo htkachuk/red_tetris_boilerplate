@@ -75,38 +75,47 @@ class Board {
   }
 
   rotateLeft(board, piece) {
-    let newPice =  JSON.parse(JSON.stringify(piece));
-    newPice.rotateLeft();
+    this.removeOldPiece(
+      board,
+      piece.x,
+      piece.y,
+      piece.piece[0]
+    );
+    piece.rotateLeft();
 
     let newBoard = this.checkBoard(
-      newPice.x,
-      newPice.y,
-      newPice.piece[0],
-      JSON.parse(JSON.stringify(board)),
-      newPice.color
+      piece.x,
+      piece.y,
+      piece.piece[0],
+      board,
+      piece.color
     );
     if (newBoard === false) {
-      return board, piece;
+      return {result: "error"};
     }
-    return newBoard, newPice;
+    return { board: newBoard, piece: piece, result: "ok" };
   }
 
   rotateRight(board, piece) {
-    let newPice =  JSON.parse(JSON.stringify(piece));
-    newPice.rotateRight();
+    this.removeOldPiece(
+      board,
+      piece.x,
+      piece.y,
+      piece.piece[0]
+    );
+    piece.rotateRight();
 
     let newBoard = this.checkBoard(
-      newPice.x,
-      newPice.y,
-      newPice.piece[0],
-      JSON.parse(JSON.stringify(board)),
-      newPice.color
+      piece.x,
+      piece.y,
+      piece.piece[0],
+      board,
+      piece.color
     );
     if (newBoard === false) {
-      return board, piece;
+      return { result: "error" };
     }
-
-    return newBoard, newPice;
+    return { board: newBoard, piece: piece, result: "ok" };
   }
 
   addLine(board, count) {
