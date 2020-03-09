@@ -153,6 +153,65 @@ class Board {
     }
     return board, counter;
   }
+
+  moveLeft(board, piece) {
+    // console.log("Board come:\n\n", board);
+    const boardCopy = JSON.parse(JSON.stringify(board));
+    if ( (piece.x - 1) < 0) {
+      return { result: "error" };
+    }
+    let newBoard = this.removeOldPiece(
+      boardCopy,
+      piece.x,
+      piece.y,
+      piece.piece[0]
+    );
+    piece.x -= 1;
+
+    let newPositionBoard = this.checkBoard(
+      piece.x,
+      piece.y,
+      piece.piece[0],
+      newBoard,
+      piece.color
+    );
+
+    if (newPositionBoard === false) {
+      piece.x += 1;
+      return { result: "error" };
+    }
+    return { board: newPositionBoard, piece: piece  };
+  }
+  moveRight(board, piece) {
+    // console.log("Board come:\n\n", board);
+    const boardCopy = JSON.parse(JSON.stringify(board));
+    if ( (piece.x - 1) < 0) {
+      return { result: "error" };
+    }
+    let newBoard = this.removeOldPiece(
+      boardCopy,
+      piece.x,
+      piece.y,
+      piece.piece[0]
+    );
+    piece.x += 1;
+
+    let newPositionBoard = this.checkBoard(
+      piece.x,
+      piece.y,
+      piece.piece[0],
+      newBoard,
+      piece.color
+    );
+
+    if (newPositionBoard === false) {
+      piece.x -= 1;
+      return { result: "error" };
+    }
+    return { board: newPositionBoard, piece: piece  };
+  }
 }
+
+
 
 export default Board;
